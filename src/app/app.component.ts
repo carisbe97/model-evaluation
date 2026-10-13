@@ -4,6 +4,8 @@ import { filter, Subscription } from 'rxjs';
 import { NavbarComponent } from './shared/components/navbar/navbar.component';
 import { ToastComponent } from './shared/components/toast/toast.component';
 
+import packageJson from '../../package.json';
+
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -13,6 +15,7 @@ import { ToastComponent } from './shared/components/toast/toast.component';
 })
 export class AppComponent implements OnDestroy {
   title = 'VOGUE ELITE - Model Evaluation';
+  readonly appVersion = packageJson.version;
   private router = inject(Router);
   private sub: Subscription;
   isEvaluationRoute = signal<boolean>(false);
