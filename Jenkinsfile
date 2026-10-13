@@ -79,8 +79,8 @@ pipeline {
         stage('Desplegar en Firebase Hosting') {
             steps {
                 echo 'Desplegando en Firebase Hosting...'
-                // Usamos npx firebase deploy pasando el token de autenticación
-                sh 'npx firebase deploy --only hosting --token "$FIREBASE_TOKEN"'
+                // Usamos npx -y firebase-tools deploy pasando el token de autenticación
+                sh 'npx -y firebase-tools deploy --only hosting --token "$FIREBASE_TOKEN"'
             }
         }
     }
