@@ -1,0 +1,72 @@
+<!-- SELECTOR DE CANDIDATA / STEPS PAGINADO (VENTANA DE 5 EN DESKTOP / 1 EN MÓVIL) -->
+<div class="flex items-center gap-1 sm:gap-1.5 shrink-0 bg-brand-dark/90 px-1.5 py-1 rounded-xl border border-brand-border/70 shadow-inner">
+  
+  <!-- Flecha Anterior -->
+  <button
+    type="button"
+    (click)="selectCandidate(currentCandidateIndex - 1)"
+    [disabled]="currentCandidateIndex === 0"
+    class="w-7 h-7 rounded-lg border border-brand-border/60 hover:border-brand-gold text-gray-400 hover:text-white flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer"
+    title="Candidata anterior"
+  >
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+    </svg>
+  </button>
+
+  <!-- Modo Desktop / Tablet: Ventana deslizante de hasta 5 candidatas -->
+  <div class="hidden sm:flex items-center gap-1">
+    @for (idx of visibleCandidateIndices; track candidatas[idx]?.id) {
+      @if (candidatas[idx]; as cand) {
+        <button
+          type="button"
+          (click)="selectCandidate(idx)"
+          [id]="'btn-candidata-' + idx"
+          class="px-2.5 py-1 rounded-lg text-xs font-semibold tracking-wider transition-all duration-200 border shrink-0 cursor-pointer"
+          [ngClass]="{
+            'bg-brand-gold text-brand-darker border-brand-gold font-bold shadow-gold-glow scale-105': currentCandidateIndex === idx,
+            'bg-brand-card text-emerald-400 border-emerald-500/40 hover:border-emerald-400': currentCandidateIndex !== idx && isEvaluated(cand.id),
+            'bg-brand-card text-gray-400 border-brand-border hover:border-gray-500': currentCandidateIndex !== idx && !isEvaluated(cand.id)
+          }"
+          [title]="'Aspirante #' + formatCandidateNumber(idx) + ': ' + cand.nombre"
+        >
+          #{{ formatCandidateNumber(idx) }}
+          @if (isEvaluated(cand.id)) {
+            <span class="text-[10px]">✓</span>
+          }
+        </button>
+      }
+    }
+  </div>
+
+  <!-- Modo Responsive / Móvil: Solo muestra la candidata actual -->
+  <div class="sm:hidden flex items-center px-1">
+    @if (candidatas[currentCandidateIndex]; as cand) {
+      <button
+        type="button"
+        class="px-2.5 py-1 rounded-lg text-xs font-bold tracking-wider bg-brand-gold text-brand-darker border border-brand-gold shadow-gold-glow flex items-center gap-1 cursor-default"
+        [title]="'Aspirante #' + formatCandidateNumber(currentCandidateIndex) + ': ' + cand.nombre"
+      >
+        <span>#{{ formatCandidateNumber(currentCandidateIndex) }}</span>
+        <span class="text-[10px] font-mono opacity-80">({{ currentCandidateIndex + 1 }}/{{ candidatas.length }})</span>
+        @if (isEvaluated(cand.id)) {
+          <span class="text-[10px]">✓</span>
+        }
+      </button>
+    }
+  </div>
+
+  <!-- Flecha Siguiente -->
+  <button
+    type="button"
+    (click)="selectCandidate(currentCandidateIndex + 1)"
+    [disabled]="currentCandidateIndex >= candidatas.length - 1"
+    class="w-7 h-7 rounded-lg border border-brand-border/60 hover:border-brand-gold text-gray-400 hover:text-white flex items-center justify-center transition-all disabled:opacity-20 disabled:pointer-events-none cursor-pointer"
+    title="Siguiente candidata"
+  >
+    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+    </svg>
+  </button>
+
+</div>

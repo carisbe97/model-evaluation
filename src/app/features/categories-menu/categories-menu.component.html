@@ -1,0 +1,145 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <!-- Header del Hub -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-brand-border/60">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs tracking-[0.3em] uppercase text-brand-gold font-semibold">
+          Panel del Jurado Calificador
+        </span>
+        <span class="w-1.5 h-1.5 rounded-full bg-brand-gold"></span>
+        <span class="text-xs text-gray-400">Edición Oficial 2026</span>
+      </div>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold text-white">
+        Categorías en Evaluación
+      </h1>
+      <p class="text-sm text-gray-400 mt-2 max-w-2xl">
+        Bienvenido, <span class="text-brand-gold font-semibold">{{ judgeSession.currentJudgeName() }}</span>.
+        Selecciona una categoría para calificar a cada aspirante bajo los criterios técnicos y artísticos.
+      </p>
+    </div>
+
+    <!-- Botones de Acción Superior (Admin & Reportes) -->
+    <div class="flex flex-wrap items-center gap-3">
+      <a
+        routerLink="/admin"
+        class="inline-flex items-center gap-2 px-4 py-3 rounded-xl bg-brand-dark hover:bg-brand-cardHover border border-brand-gold/50 hover:border-brand-gold text-brand-gold text-xs tracking-wider uppercase font-semibold transition-all duration-300 shadow-md group cursor-pointer"
+        title="Administración y CRUD de Categorías y Criterios"
+      >
+        <svg class="w-4 h-4 text-brand-gold group-hover:rotate-45 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+        <span>Gestión de Categorías</span>
+      </a>
+
+      <a
+        routerLink="/results"
+        class="inline-flex items-center gap-2 px-5 py-3 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-gold/40 hover:border-brand-gold text-brand-goldLight text-xs tracking-wider uppercase font-semibold transition-all duration-300 shadow-md group"
+      >
+        <svg class="w-4 h-4 text-brand-gold group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+        </svg>
+        <span>Ver Podio & Resultados</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- Resumen Global de Progreso del Juez -->
+  <div class="mt-8 p-6 rounded-2xl bg-brand-card border border-brand-border/70 flex flex-col md:flex-row items-center justify-between gap-6">
+    <div class="flex items-center gap-4 w-full md:w-auto">
+      <div class="w-12 h-12 rounded-xl bg-brand-dark flex items-center justify-center border border-brand-border">
+        <span class="font-display font-bold text-brand-gold text-lg">
+          {{ judgeSession.totalEvaluated() }}
+        </span>
+      </div>
+      <div>
+        <span class="text-xs uppercase tracking-wider text-gray-400 block font-medium">Progreso Individual</span>
+        <span class="text-sm font-semibold text-white">
+          {{ judgeSession.totalEvaluated() }} de {{ totalCandidatesCount() }} aspirantes evaluadas por ti
+        </span>
+      </div>
+    </div>
+
+    <!-- Barra de progreso -->
+    <div class="w-full md:w-72 bg-brand-dark rounded-full h-2.5 p-0.5 border border-brand-border overflow-hidden">
+      <div
+        class="h-full rounded-full gold-gradient-bg transition-all duration-500"
+        [style.width.%]="progressPercentage()"
+      ></div>
+    </div>
+  </div>
+
+  <!-- Grid de Categorías -->
+  @if (isLoading()) {
+    <app-loader text="Cargando categorías y candidatas..." />
+  } @else {
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 mt-10">
+      @for (cat of categoriesWithProgress(); track cat.id) {
+        <div
+          class="group relative overflow-hidden rounded-3xl bg-brand-card border border-brand-border/80 hover:border-brand-gold/50 transition-all duration-500 shadow-xl flex flex-col justify-between"
+        >
+          <!-- Banner superior -->
+          <div class="relative w-full h-48 overflow-hidden bg-brand-dark">
+            @if (cat.banner_url) {
+              <img
+                [src]="cat.banner_url"
+                [alt]="cat.nombre"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+              />
+            }
+            <div class="absolute inset-0 bg-gradient-to-t from-brand-card via-brand-card/40 to-black/60"></div>
+
+            <!-- Status Badge reactivo en la tarjeta -->
+            <div class="absolute top-4 right-4">
+              <app-status-badge [estado]="cat.estado" />
+            </div>
+
+            <div class="absolute bottom-4 left-4 right-4">
+              <span class="text-[10px] tracking-widest uppercase text-brand-gold font-bold">
+                Categoría 0{{ cat.orden }}
+              </span>
+              <h2 class="font-display text-xl font-bold text-white group-hover:text-brand-goldLight transition-colors">
+                {{ cat.nombre }}
+              </h2>
+            </div>
+          </div>
+
+          <!-- Contenido de la categoría -->
+          <div class="p-6 flex-1 flex flex-col justify-between">
+            <p class="text-xs text-gray-400 leading-relaxed line-clamp-3">
+              {{ cat.descripcion }}
+            </p>
+
+            <div class="mt-6 pt-4 border-t border-brand-border/50 flex items-center justify-between">
+              <div class="text-xs">
+                <span class="text-gray-400 block font-medium">Calificaciones:</span>
+                <span class="font-semibold text-white">
+                  {{ cat.evaluadas }} / {{ cat.total_candidatas }} evaluadas
+                </span>
+              </div>
+
+              <button
+                (click)="onStartCategory(cat.id)"
+                class="px-4 py-2.5 rounded-xl text-xs font-bold tracking-wider uppercase transition-all duration-200 flex items-center gap-1.5"
+                [ngClass]="{
+                  'bg-brand-dark hover:bg-brand-cardHover border border-brand-gold/60 text-brand-goldLight': cat.estado === 'Completada',
+                  'bg-sky-950/80 hover:bg-sky-900 border border-sky-500/50 text-sky-300': cat.estado === 'En Progreso',
+                  'gold-gradient-bg text-brand-darker hover:brightness-110 shadow-gold-glow': cat.estado === 'Pendiente'
+                }"
+              >
+                <span>
+                  {{ cat.estado === 'Completada' ? 'Revisar / Modificar' : (cat.estado === 'En Progreso' ? 'Continuar (' + cat.evaluadas + '/' + cat.total_candidatas + ')' : 'Evaluar Ahora') }}
+                </span>
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      }
+    </div>
+  }
+
+</div>

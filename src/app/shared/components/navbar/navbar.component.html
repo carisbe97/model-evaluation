@@ -1,0 +1,70 @@
+<header class="sticky top-0 z-50 w-full border-b border-brand-border/60 bg-brand-darker/90 backdrop-blur-md">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    
+    <!-- Brand Logo -->
+    <a routerLink="/categories" class="flex items-center gap-3 group focus:outline-none">
+      <div class="w-10 h-10 rounded-full border border-brand-gold/40 flex items-center justify-center bg-brand-dark group-hover:border-brand-gold transition-colors duration-300">
+        <span class="font-display font-bold text-lg text-brand-gold">VE</span>
+      </div>
+      <div>
+        <span class="font-display font-bold text-xl tracking-[0.2em] text-white block group-hover:text-brand-goldLight transition-colors">
+          VOGUE ELITE
+        </span>
+        <span class="text-[10px] tracking-[0.3em] uppercase text-brand-gold font-medium block">
+          Model Agency Evaluation
+        </span>
+      </div>
+    </a>
+
+    <!-- Navigation Links (si está autenticado) -->
+    @if (judgeSession.isAuthenticated()) {
+      <nav class="hidden md:flex items-center gap-8">
+        <a
+          routerLink="/categories"
+          routerLinkActive="text-brand-gold border-b-2 border-brand-gold"
+          class="text-sm tracking-wider uppercase font-medium text-gray-300 hover:text-white py-1 transition-colors"
+        >
+          Categorías
+        </a>
+        <a
+          routerLink="/results"
+          routerLinkActive="text-brand-gold border-b-2 border-brand-gold"
+          class="text-sm tracking-wider uppercase font-medium text-gray-300 hover:text-white py-1 transition-colors flex items-center gap-1.5"
+        >
+          <span>Podio & Reportes</span>
+          <span class="text-xs px-1.5 py-0.5 rounded bg-brand-gold/20 text-brand-gold font-mono">LIVE</span>
+        </a>
+      </nav>
+
+      <!-- Judge Session Info & Switch Button -->
+      <div class="flex items-center gap-4">
+        <div class="flex items-center gap-3 px-3.5 py-1.5 rounded-full bg-brand-card border border-brand-border">
+          <div class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></div>
+          <div class="text-left">
+            <span class="text-[10px] text-gray-400 block uppercase tracking-wider">Juez en Sala</span>
+            <span class="text-xs font-semibold text-white tracking-wide truncate max-w-[140px] block">
+              {{ judgeSession.currentJudgeName() }}
+            </span>
+          </div>
+        </div>
+
+        <button
+          (click)="onExitJudgeSession()"
+          title="Cambiar de evaluador"
+          class="p-2 rounded-full border border-brand-border/70 hover:border-red-500/40 text-gray-400 hover:text-red-400 hover:bg-red-950/20 transition-all duration-200"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+          </svg>
+        </button>
+      </div>
+    } @else {
+      <!-- Demo Indicator -->
+      <div class="flex items-center gap-2 text-xs text-brand-goldLight/70 font-mono">
+        <span class="w-2 h-2 rounded-full bg-brand-gold animate-ping"></span>
+        <span>MODO EVALUACIÓN DEMO</span>
+      </div>
+    }
+
+  </div>
+</header>

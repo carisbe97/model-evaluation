@@ -1,0 +1,71 @@
+<div class="w-full max-w-[1720px] mx-auto px-4 sm:px-6 lg:px-8 py-3 h-full flex-1 min-h-0 overflow-hidden flex flex-col">
+  
+  @if (isLoading()) {
+    <app-loader text="Preparando mesa de calificación..." />
+  } @else if (candidatas().length === 0) {
+    <div class="text-center py-20 bg-brand-card rounded-3xl border border-brand-border">
+      <p class="text-gray-400">No se encontraron aspirantes registradas para esta categoría.</p>
+      <a routerLink="/categories" class="mt-4 inline-block text-xs uppercase tracking-wider text-brand-gold">
+        ← Volver a categorías
+      </a>
+    </div>
+  } @else {
+    
+    <!-- Layout Principal: Visor de Fotos + Formulario de Calificación (Ocupa el 100% de la altura útil) -->
+    <div class="flex-1 min-h-0 grid grid-cols-1 lg:grid-cols-12 lg:grid-rows-1 gap-4 overflow-hidden h-full">
+      
+      <!-- Columna Izquierda (5 Cols): Visor de Fotos & Perfil de la Aspirante -->
+      <div class="lg:col-span-5 h-full flex flex-col gap-3 min-h-0 overflow-hidden">
+        @if (currentCandidate(); as cand) {
+          
+          <!-- FILA 1: Componente de Galería y Carrusel de Fotos -->
+          <app-candidate-gallery
+            class="flex-1 min-h-0 flex flex-col"
+            [candidate]="cand"
+            [categoryName]="currentCategory()?.nombre || ''"
+            [candidateIndex]="currentCandidateIndex()"
+          />
+
+          <!-- FILA 2: Visor de Red Social Oficial (solo info de perfil compacta) -->
+          @if (cand.url_redes_sociales) {
+            <div class="shrink-0">
+              <app-social-preview
+                [url]="cand.url_redes_sociales"
+                [candidateName]="cand.nombre"
+                [candidateAvatar]="cand.foto_perfil"
+              />
+            </div>
+          }
+        }
+      </div>
+
+      <!-- Columna Derecha (7 Cols): Formulario Reactivo de Evaluación con Scroll Interno -->
+      <div class="lg:col-span-7 h-full min-h-0 flex flex-col overflow-hidden">
+        <app-evaluation-form
+          class="h-full flex-1 min-h-0 flex flex-col overflow-hidden"
+          [category]="currentCategory()"
+          [candidate]="currentCandidate()"
+          [candidatas]="candidatas()"
+          [currentCandidateIndex]="currentCandidateIndex()"
+          [criterios]="criterios()"
+          [scoresMap]="scoresMap()"
+          [qualitativeMap]="qualitativeMap()"
+          [observaciones]="observaciones"
+          [isSaving]="isSaving()"
+          [isCandidateAlreadyEvaluated]="isCandidateAlreadyEvaluated()"
+          [isLastCandidate]="isLastCandidate()"
+          [computedAverageScore]="computedAverageScore()"
+          (candidateSelected)="selectCandidateIndex($event)"
+          (scoreChanged)="onScoreChange($event.criterioId, $event.score)"
+          (qualitativeChanged)="onQualitativeChange($event.criterioId, $event.option)"
+          (observationsChanged)="observaciones = $event"
+          (prevCandidate)="onPrevCandidate()"
+          (saveAndProceed)="onSaveAndProceed()"
+        />
+      </div>
+
+    </div>
+
+  }
+
+</div>

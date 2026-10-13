@@ -1,0 +1,264 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div class="w-full max-w-[800px] bg-brand-card border border-brand-gold/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Encabezado Modal -->
+      <div class="flex items-center justify-between pb-4 mb-6 border-b border-brand-border/60">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-brand-gold font-bold">
+            {{ mode() === 'create' ? 'Nuevo Criterio' : 'Actualizar Criterio' }}
+          </span>
+          <h3 class="font-display text-xl font-bold text-white mt-0.5">
+            {{ mode() === 'create' ? 'Definir Criterio Evaluativo' : 'Editar Criterio' }}
+          </h3>
+        </div>
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-brand-dark transition-colors cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <form (ngSubmit)="onSubmit()" class="space-y-4">
+        
+        <!-- Categoría Asignada y Orden (Grid aprovechando los 800px) -->
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="sm:col-span-2">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+              Categoría del Certamen <span class="text-brand-gold">*</span>
+            </label>
+            <select
+              [(ngModel)]="critFormCategoriaId"
+              name="critFormCategoriaId"
+              required
+              class="w-full px-4 py-3 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+            >
+              <option [ngValue]="0" disabled selected>0 - Selecciona una categoría...</option>
+              @for (cat of categorias(); track cat.id) {
+                <option [ngValue]="cat.id">0{{ cat.orden }} - {{ cat.nombre }}</option>
+              }
+            </select>
+          </div>
+
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5 flex items-center justify-between">
+              <span>Orden de Evaluación <span class="text-brand-gold">*</span></span>
+              <span class="text-[10px] text-gray-500 font-normal lowercase tracking-normal">(solo lectura)</span>
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="critFormOrden"
+              name="critFormOrden"
+              disabled
+              readonly
+              class="w-full px-4 py-3 bg-brand-dark/50 rounded-xl border border-brand-border/60 text-gray-400 text-sm cursor-not-allowed select-none focus:outline-none"
+            />
+          </div>
+        </div>
+
+        <!-- Nombre del Criterio -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+            Nombre del Criterio <span class="text-brand-gold">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="critFormNombre"
+            name="critFormNombre"
+            placeholder="Ej. Pasarela y Porte, Expresión Corporal, Dicción..."
+            required
+            class="w-full px-4 py-3 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+          />
+        </div>
+
+        <!-- Selector de Tipo de Calificación (3 Cards) -->
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-2">
+            Tipo de Evaluación Técnica <span class="text-brand-gold">*</span>
+          </label>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            
+            <button
+              type="button"
+              (click)="critFormTipo = 'cuantitativa'"
+              class="p-3.5 rounded-xl border text-left transition-all cursor-pointer"
+              [ngClass]="{
+                'border-brand-gold bg-brand-gold/15 text-white shadow-gold-glow ring-1 ring-brand-gold/40': critFormTipo === 'cuantitativa',
+                'border-brand-border bg-brand-dark/60 text-gray-400 hover:border-gray-500 hover:text-gray-200': critFormTipo !== 'cuantitativa'
+              }"
+            >
+              <span class="block text-xs font-bold uppercase tracking-wider" [ngClass]="critFormTipo === 'cuantitativa' ? 'text-brand-gold' : 'text-gray-300'">
+                ★ Cuantitativa
+              </span>
+              <span class="text-[10px] text-gray-400 mt-1 block">Estrellas / Nota numérica con peso %</span>
+            </button>
+
+            <button
+              type="button"
+              (click)="critFormTipo = 'ordinal'"
+              class="p-3.5 rounded-xl border text-left transition-all cursor-pointer"
+              [ngClass]="{
+                'border-purple-500 bg-purple-950/30 text-white shadow-md ring-1 ring-purple-500/40': critFormTipo === 'ordinal',
+                'border-brand-border bg-brand-dark/60 text-gray-400 hover:border-gray-500 hover:text-gray-200': critFormTipo !== 'ordinal'
+              }"
+            >
+              <span class="block text-xs font-bold uppercase tracking-wider" [ngClass]="critFormTipo === 'ordinal' ? 'text-purple-400' : 'text-gray-300'">
+                ◆ Ordinal
+              </span>
+              <span class="text-[10px] text-gray-400 mt-1 block">Escala Likert graduada con peso %</span>
+            </button>
+
+            <button
+              type="button"
+              (click)="critFormTipo = 'cualitativa'"
+              class="p-3.5 rounded-xl border text-left transition-all cursor-pointer"
+              [ngClass]="{
+                'border-sky-500 bg-sky-950/30 text-white shadow-md ring-1 ring-sky-500/40': critFormTipo === 'cualitativa',
+                'border-brand-border bg-brand-dark/60 text-gray-400 hover:border-gray-500 hover:text-gray-200': critFormTipo !== 'cualitativa'
+              }"
+            >
+              <span class="block text-xs font-bold uppercase tracking-wider" [ngClass]="critFormTipo === 'cualitativa' ? 'text-sky-400' : 'text-gray-300'">
+                ✎ Cualitativa
+              </span>
+              <span class="text-[10px] text-gray-400 mt-1 block">Feedback descriptivo y apreciación</span>
+            </button>
+
+          </div>
+        </div>
+
+        <!-- Indicador cuando aún no hay tipo seleccionado -->
+        @if (!critFormTipo) {
+          <div class="p-4 rounded-xl border border-dashed border-brand-border/70 bg-brand-dark/40 text-center">
+            <p class="text-xs text-gray-400">
+              Selecciona un tipo de evaluación arriba para configurar los parámetros de calificación.
+            </p>
+          </div>
+        }
+
+        <!-- Parámetros específicos según tipo -->
+        @if (critFormTipo === 'cuantitativa' || critFormTipo === 'ordinal') {
+          <div class="p-4 rounded-xl bg-brand-dark/80 border border-brand-border space-y-3">
+            <div [class]="critFormTipo === 'cuantitativa' ? 'grid grid-cols-1 sm:grid-cols-3 gap-3' : 'max-w-xs'">
+              <div>
+                <label class="block text-xs font-semibold uppercase tracking-wider text-brand-gold mb-1">
+                  Peso Ponderado (%) <span class="text-brand-gold">*</span>
+                </label>
+                <div class="relative">
+                  <input
+                    type="number"
+                    min="1"
+                    max="100"
+                    [(ngModel)]="critFormPeso"
+                    name="critFormPeso"
+                    placeholder="Ej. 25"
+                    required
+                    class="w-full px-4 py-2.5 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold"
+                  />
+                  <span class="absolute right-3 top-2.5 text-xs text-gray-500 font-bold">%</span>
+                </div>
+              </div>
+
+              @if (critFormTipo === 'cuantitativa') {
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">
+                    Nota Mínima
+                  </label>
+                  <input
+                    type="number"
+                    min="0"
+                    [(ngModel)]="critFormPuntajeMin"
+                    name="critFormPuntajeMin"
+                    placeholder="Ej. 1"
+                    class="w-full px-4 py-2.5 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold"
+                  />
+                </div>
+
+                <div>
+                  <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1">
+                    Nota Máxima
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    [(ngModel)]="critFormPuntajeMax"
+                    name="critFormPuntajeMax"
+                    placeholder="Ej. 10"
+                    class="w-full px-4 py-2.5 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold"
+                  />
+                </div>
+              }
+            </div>
+
+            <p class="text-[11px] text-gray-400">
+              El peso define la relevancia de este criterio en el cálculo de la nota final de la categoría.
+            </p>
+          </div>
+        }
+
+        <!-- Opciones para Ordinal o Cualitativa -->
+        @if (critFormTipo === 'ordinal' || critFormTipo === 'cualitativa') {
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+              Opciones de Escala (separadas por comas) <span class="text-brand-gold">*</span>
+            </label>
+            <input
+              type="text"
+              [(ngModel)]="critFormOpcionesTexto"
+              name="critFormOpcionesTexto"
+              placeholder="Ej. Deficiente, Regular, Bueno, Sobresaliente, Excelente"
+              class="w-full px-4 py-3 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold"
+            />
+            <p class="text-[11px] text-gray-400 mt-1">
+              {{ critFormTipo === 'ordinal' ? 'Se mapearán automáticamente de menor a mayor valor numérico equitativo.' : 'Opciones que podrá seleccionar el juez para calificar cualitativamente.' }}
+            </p>
+          </div>
+        }
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+            Descripción y Guía Técnica para el Jurado <span class="text-gray-500 font-normal">(Opcional)</span>
+          </label>
+          <textarea
+            rows="2"
+            [(ngModel)]="critFormDescripcion"
+            name="critFormDescripcion"
+            placeholder="Pautas específicas que el juez debe considerar al evaluar este criterio..."
+            class="w-full px-4 py-3 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-border/60">
+          <button
+            type="button"
+            (click)="onCancel()"
+            class="px-4 py-2.5 rounded-xl border border-brand-border hover:border-gray-400 text-gray-300 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSubmitting()"
+            class="px-5 py-2.5 rounded-xl gold-gradient-bg text-brand-darker text-xs font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-gold-glow flex items-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            @if (isSubmitting()) {
+              <svg class="w-4 h-4 animate-spin text-brand-darker" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              <span>Guardando...</span>
+            } @else {
+              <span>{{ mode() === 'create' ? 'Crear Criterio' : 'Actualizar Criterio' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+}

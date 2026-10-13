@@ -1,0 +1,146 @@
+<div class="h-full flex flex-col rounded-3xl bg-brand-card border border-brand-border/80 shadow-2xl overflow-hidden min-h-0">
+  
+  <!-- Header Fijo Superior (shrink-0): Ficha de Calificación & Steps Reubicados & Nota Ponderada -->
+  <div class="p-3.5 sm:p-4 border-b border-brand-border/60 bg-brand-card shrink-0">
+    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      
+      <!-- Título y Categoría con acceso rápido a categorías -->
+      <div class="flex items-center gap-2.5">
+        <a
+          routerLink="/categories"
+          class="p-1.5 rounded-lg bg-brand-dark/90 hover:bg-brand-gold hover:text-brand-dark text-gray-400 border border-brand-border/70 transition-all cursor-pointer"
+          title="Volver al menú de categorías"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+          </svg>
+        </a>
+        <div>
+          <h3 class="font-display text-sm sm:text-base font-bold text-white leading-tight flex items-center gap-2">
+            <span>Ficha de Calificación</span>
+            @if (category) {
+              <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-gold/15 text-brand-gold border border-brand-gold/30 font-medium">
+                {{ category.nombre }}
+              </span>
+            }
+          </h3>
+        </div>
+      </div>
+
+      <!-- SELECTOR DE CANDIDATA / STEPS PAGINADO (COMPONENTE MODULAR) -->
+      <app-candidate-selector
+        [candidatas]="candidatas"
+        [currentCandidateIndex]="currentCandidateIndex"
+        (candidateSelected)="onSelectCandidate($event)"
+      />
+
+      <!-- Promedio Ponderado en Vivo -->
+      <div class="flex flex-col items-end shrink-0">
+        <span class="text-[9px] uppercase tracking-wider text-brand-gold font-bold">Nota Ponderada</span>
+        <div class="flex items-baseline gap-1">
+          <span class="font-display font-extrabold text-2xl text-brand-goldLight leading-none">
+            {{ computedAverageScore }}
+          </span>
+          @if (computedAverageScore !== '--') {
+            <span class="text-[11px] text-gray-400 font-mono">/ 10</span>
+          }
+        </div>
+      </div>
+
+    </div>
+
+    @if (isCandidateAlreadyEvaluated) {
+      <div class="mt-2.5 p-2 rounded-xl bg-sky-950/50 border border-sky-500/40 text-sky-200 text-[11px] flex items-center gap-2">
+        <svg class="w-3.5 h-3.5 text-sky-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+        </svg>
+        <span>Aspirante ya calificada por ti. Puedes modificar cualquier nota y guardar los cambios.</span>
+      </div>
+    }
+  </div>
+
+  <!-- Cuerpo Scrolleable Central (flex-1 min-h-0 overflow-y-auto): Criterios y Observaciones -->
+  <div class="flex-1 min-h-0 overflow-y-auto p-4 sm:p-5 space-y-5 scrollbar-thin">
+
+    <!-- SECCIÓN 1: CRITERIOS CUANTITATIVOS -->
+    @if (criteriosCuantitativos.length > 0) {
+      <me-criterios-cuantitativos-form
+        [criterios]="criteriosCuantitativos"
+        [scoresMap]="scoresMap"
+        (scoreChanged)="onScoreChange($event.criterioId, $event.score)"
+      />
+    }
+
+    <!-- SECCIÓN 2: CRITERIOS ORDINALES (ESCALA LIKERT CON PONDERACIÓN %) -->
+    @if (criteriosOrdinales.length > 0) {
+      <me-criterios-ordinales-form
+        [criterios]="criteriosOrdinales"
+        [qualitativeMap]="qualitativeMap"
+        (qualitativeChanged)="onQualitativeChange($event.criterioId, $event.option)"
+      />
+    }
+
+    <!-- SECCIÓN 3: CRITERIOS CUALITATIVOS PUROS (APRECIACIÓN DESCRIPTIVA) -->
+    @if (criteriosCualitativos.length > 0) {
+      <me-criterios-cualitativos-form
+        [criterios]="criteriosCualitativos"
+        [qualitativeMap]="qualitativeMap"
+        (qualitativeChanged)="onQualitativeChange($event.criterioId, $event.option)"
+      />
+    }
+
+    <!-- Campo Cualitativo: Observaciones -->
+    <div class="pt-2">
+      <label for="observations" class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+        Observaciones & Devolución Final (Opcional)
+      </label>
+      <textarea
+        id="observations"
+        rows="2"
+        [ngModel]="observaciones"
+        (ngModelChange)="onObservationsInput($event)"
+        placeholder="Comentarios sobre pasarela, actitud, soltura o recomendación especial para esta aspirante..."
+        class="w-full px-3.5 py-2.5 bg-brand-dark rounded-xl border border-brand-border text-white text-xs placeholder-gray-500 focus:outline-none focus:border-brand-gold transition-colors leading-relaxed resize-none"
+      ></textarea>
+    </div>
+
+  </div>
+
+  <!-- Barra Inferior Fija (shrink-0): Botones de Navegación y Guardar Siempre Accesibles -->
+  <div class="p-3.5 sm:p-4 border-t border-brand-border/60 bg-brand-card shrink-0 flex items-center justify-between gap-4">
+    
+    <button
+      type="button"
+      (click)="onPrev()"
+      [disabled]="currentCandidateIndex === 0"
+      class="px-4 py-2.5 rounded-xl border border-brand-border hover:border-gray-400 text-gray-400 hover:text-white text-xs tracking-wider uppercase font-semibold disabled:opacity-30 disabled:pointer-events-none transition-all cursor-pointer"
+    >
+      ← Anterior
+    </button>
+
+    <div class="flex items-center gap-3">
+      <button
+        type="button"
+        (click)="onSave()"
+        [disabled]="isSaving"
+        class="px-5 py-2.5 rounded-xl gold-gradient-bg text-brand-darker font-bold text-xs tracking-widest uppercase hover:brightness-110 active:scale-[0.99] transition-all shadow-gold-glow flex items-center gap-2 cursor-pointer"
+      >
+        @if (isSaving) {
+          <span>Guardando...</span>
+        } @else {
+          <span>
+            {{ isCandidateAlreadyEvaluated 
+                ? (isLastCandidate ? 'Actualizar y Finalizar' : 'Actualizar y Siguiente') 
+                : (isLastCandidate ? 'Finalizar Categoría' : 'Guardar y Siguiente') 
+            }}
+          </span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+          </svg>
+        }
+      </button>
+    </div>
+
+  </div>
+
+</div>

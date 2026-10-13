@@ -1,0 +1,52 @@
+<div class="mt-6">
+  <div class="flex items-center gap-2 mb-3">
+    <span class="text-xs font-bold uppercase tracking-wider text-brand-goldLight">
+      3. Criterios de Apreciación (Cualitativo Descriptivo)
+    </span>
+    <span class="h-px flex-1 bg-brand-border/60"></span>
+  </div>
+
+  <div class="space-y-4">
+    @for (crit of criterios; track crit.id) {
+      <div class="p-3 rounded-2xl bg-brand-dark/50 border border-brand-border/70 hover:border-brand-gold/30 transition-colors">
+        
+        <div class="mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-sm font-semibold text-white">{{ crit.nombre }}</span>
+            <span class="text-[10px] px-2 py-0.5 rounded font-mono transition-colors"
+              [ngClass]="qualitativeMap[crit.id] ? 'bg-emerald-950/70 text-emerald-400 border border-emerald-500/30' : 'bg-amber-950/50 text-amber-300 border border-amber-500/30'">
+              {{ qualitativeMap[crit.id] ? '✓ Calificado' : '• Pendiente' }}
+            </span>
+          </div>
+          @if (crit.descripcion) {
+            <p class="text-xs text-gray-400 mt-0.5">{{ crit.descripcion }}</p>
+          }
+        </div>
+
+        <!-- Radio Buttons en estilo Pills descriptivas -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          @for (opcion of crit.opciones_cualitativas || ['Bien', 'Bueno', 'Excelente']; track opcion) {
+            <label
+              class="relative flex items-center justify-center px-3 py-3 rounded-xl border cursor-pointer select-none transition-all duration-200 text-xs font-semibold"
+              [ngClass]="{
+                'bg-brand-gold text-brand-darker border-brand-gold shadow-gold-glow font-bold': qualitativeMap[crit.id] === opcion,
+                'bg-brand-dark hover:bg-brand-card border-brand-border text-gray-300 hover:text-white hover:border-gray-500': qualitativeMap[crit.id] !== opcion
+              }"
+            >
+              <input
+                type="radio"
+                [name]="'cualitativo-' + crit.id"
+                [value]="opcion"
+                [checked]="qualitativeMap[crit.id] === opcion"
+                (change)="onQualitativeChange(crit.id, opcion)"
+                class="sr-only"
+              />
+              <span>{{ opcion }}</span>
+            </label>
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

@@ -1,0 +1,185 @@
+<div class="mt-8 space-y-12">
+  
+  <!-- Podio de Honor (Top 3 destacados si hay suficientes) -->
+  @if (topWinners.length >= 3) {
+    <div class="p-8 rounded-3xl bg-brand-card border border-brand-border/80 relative overflow-hidden shadow-2xl">
+      <div class="text-center mb-8">
+        <span class="text-[10px] tracking-[0.3em] uppercase text-brand-gold font-bold">Cuadro de Honor</span>
+        <h2 class="font-display text-2xl font-bold text-white">Podio de Aspirantes</h2>
+      </div>
+
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 items-end max-w-4xl mx-auto">
+        
+        <!-- Segundo Lugar (Plata) -->
+        <div class="order-2 md:order-1 flex flex-col items-center">
+          <div class="relative w-28 h-36 rounded-2xl overflow-hidden border-2 border-slate-300 shadow-lg">
+            <img [src]="topWinners[1].candidata_foto" class="w-full h-full object-cover" />
+            <div class="absolute top-2 left-2 w-6 h-6 rounded-full bg-slate-300 text-black font-bold text-xs flex items-center justify-center font-mono">
+              2
+            </div>
+          </div>
+          <span class="font-display font-semibold text-white mt-3 text-sm text-center">
+            {{ topWinners[1].candidata_nombre }}
+          </span>
+          <span class="text-xs text-gray-400">{{ topWinners[1].categoria_nombre }}</span>
+          <span class="mt-1 px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono text-xs font-bold border border-slate-600">
+            {{ topWinners[1].puntaje_total_promedio }} pts
+          </span>
+        </div>
+
+        <!-- Primer Lugar (Oro) -->
+        <div class="order-1 md:order-2 flex flex-col items-center -translate-y-4">
+          <div class="w-8 h-8 text-brand-gold mb-1 animate-bounce">
+            <svg fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+          </div>
+          <div class="relative w-36 h-48 rounded-2xl overflow-hidden border-2 border-brand-gold shadow-gold-glow">
+            <img [src]="topWinners[0].candidata_foto" class="w-full h-full object-cover" />
+            <div class="absolute top-2 left-2 w-7 h-7 rounded-full bg-brand-gold text-black font-bold text-sm flex items-center justify-center font-mono shadow-md">
+              1
+            </div>
+          </div>
+          <span class="font-display font-bold text-brand-goldLight mt-3 text-base text-center">
+            {{ topWinners[0].candidata_nombre }}
+          </span>
+          <span class="text-xs text-gray-300 font-medium">{{ topWinners[0].categoria_nombre }}</span>
+          <span class="mt-1 px-3 py-1 rounded-full gold-gradient-bg text-black font-mono text-xs font-extrabold shadow-sm">
+            {{ topWinners[0].puntaje_total_promedio }} pts
+          </span>
+        </div>
+
+        <!-- Tercer Lugar (Bronce) -->
+        <div class="order-3 flex flex-col items-center">
+          <div class="relative w-28 h-36 rounded-2xl overflow-hidden border-2 border-amber-700 shadow-lg">
+            <img [src]="topWinners[2].candidata_foto" class="w-full h-full object-cover" />
+            <div class="absolute top-2 left-2 w-6 h-6 rounded-full bg-amber-700 text-white font-bold text-xs flex items-center justify-center font-mono">
+              3
+            </div>
+          </div>
+          <span class="font-display font-semibold text-white mt-3 text-sm text-center">
+            {{ topWinners[2].candidata_nombre }}
+          </span>
+          <span class="text-xs text-gray-400">{{ topWinners[2].categoria_nombre }}</span>
+          <span class="mt-1 px-2.5 py-0.5 rounded-full bg-amber-950 text-amber-400 font-mono text-xs font-bold border border-amber-800">
+            {{ topWinners[2].puntaje_total_promedio }} pts
+          </span>
+        </div>
+
+      </div>
+    </div>
+  }
+
+  <!-- Tabla de Ranking Completa -->
+  <div class="rounded-3xl bg-brand-card border border-brand-border/80 overflow-hidden shadow-xl">
+    <div class="p-6 border-b border-brand-border/60 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+      <div>
+        <div class="flex items-center gap-2">
+          <h3 class="font-display text-lg font-bold text-white">Tabla de Posiciones</h3>
+          <span class="text-[10px] px-2 py-0.5 rounded-full bg-brand-gold/15 text-brand-gold border border-brand-gold/30 font-mono font-medium">
+            Cuantitativas + Ordinales
+          </span>
+        </div>
+        <p class="text-xs text-gray-400 mt-0.5">
+          Consolidado a partir de <code class="text-brand-gold font-mono">vista_ranking_categoria</code> integrando notas numéricas directas y escalas ordinales convertidas proporcionalmente.
+        </p>
+      </div>
+      <span class="text-xs font-mono text-gray-400">Total: {{ ranking.length }} aspirantes</span>
+    </div>
+
+    <div class="overflow-x-auto">
+      <table class="w-full text-left border-collapse">
+        <thead>
+          <tr class="border-b border-brand-border/60 bg-brand-dark/50 text-[11px] uppercase tracking-wider text-gray-400 font-semibold">
+            <th class="py-4 px-6 text-center w-16">Pos.</th>
+            <th class="py-4 px-6">Aspirante</th>
+            <th class="py-4 px-6">Categoría</th>
+            <th class="py-4 px-6 text-center">Evaluaciones</th>
+            <th class="py-4 px-6 text-right">Promedio Final</th>
+            <th class="py-4 px-6 text-center">Expediente</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-brand-border/40 text-sm">
+          @for (item of ranking; track item.candidata_id) {
+            <tr class="hover:bg-brand-dark/40 transition-colors">
+              <!-- Posición -->
+              <td class="py-4 px-6 text-center font-mono font-bold">
+                <span
+                  class="inline-flex items-center justify-center w-7 h-7 rounded-full text-xs"
+                  [ngClass]="{
+                    'bg-brand-gold text-black font-extrabold shadow-sm': item.ranking_posicion === 1,
+                    'bg-slate-300 text-black font-extrabold': item.ranking_posicion === 2,
+                    'bg-amber-800 text-white font-extrabold': item.ranking_posicion === 3,
+                    'text-gray-400': item.ranking_posicion > 3
+                  }"
+                >
+                  {{ item.ranking_posicion }}
+                </span>
+              </td>
+
+              <!-- Candidata Foto y Nombre -->
+              <td class="py-4 px-6">
+                <div class="flex items-center gap-3">
+                  <img
+                    [src]="item.candidata_foto"
+                    [alt]="item.candidata_nombre"
+                    class="w-11 h-14 rounded-lg object-cover border border-brand-border"
+                  />
+                  <div>
+                    <span class="font-display font-semibold text-white block">
+                      {{ item.candidata_nombre }}
+                    </span>
+                    @if (item.url_redes_sociales) {
+                      <a
+                        [href]="item.url_redes_sociales"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="text-[11px] text-brand-gold hover:underline inline-flex items-center gap-1 mt-0.5"
+                      >
+                        <span>Perfil Social</span>
+                        <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        </svg>
+                      </a>
+                    }
+                  </div>
+                </div>
+              </td>
+
+              <!-- Categoría -->
+              <td class="py-4 px-6 text-gray-300 text-xs font-medium">
+                {{ item.categoria_nombre }}
+              </td>
+
+              <!-- Evaluaciones Recibidas -->
+              <td class="py-4 px-6 text-center text-xs font-mono text-gray-400">
+                {{ item.total_evaluaciones }}
+              </td>
+
+              <!-- Promedio Final -->
+              <td class="py-4 px-6 text-right font-mono font-bold text-base text-brand-goldLight">
+                {{ item.puntaje_total_promedio }}
+              </td>
+
+              <!-- Botón para ver Ficha / Expediente Consolidado -->
+              <td class="py-4 px-6 text-center">
+                <button
+                  type="button"
+                  (click)="onViewCandidate(item.candidata_id)"
+                  class="px-3 py-1.5 rounded-lg bg-brand-gold/10 hover:bg-brand-gold hover:text-brand-darker border border-brand-gold/30 text-brand-gold text-xs font-semibold tracking-wider transition-all inline-flex items-center gap-1.5 cursor-pointer shadow-sm group"
+                  title="Ver calificaciones numéricas y apreciaciones cualitativas consolidadas"
+                >
+                  <svg class="w-3.5 h-3.5 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                  <span>Ver Ficha</span>
+                </button>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</div>

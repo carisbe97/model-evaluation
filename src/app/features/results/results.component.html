@@ -1,0 +1,172 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  
+  <!-- Encabezado de Reportes y Evaluaciones -->
+  <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 pb-8 border-b border-brand-border/60">
+    <div>
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-xs tracking-[0.3em] uppercase text-brand-gold font-semibold">
+          Resultados & Actas de Evaluación
+        </span>
+        <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span class="text-xs text-emerald-400 font-mono">SISTEMA OFICIAL VOGUE ELITE</span>
+      </div>
+      <h1 class="font-display text-3xl sm:text-4xl font-bold text-white">
+        Panel de Resultados & Evaluaciones
+      </h1>
+      <p class="text-sm text-gray-400 mt-2 max-w-2xl">
+        Consulta las evaluaciones registradas por los jueces, filtra por evaluador y revisa las calificaciones detalladas o el ranking consolidado.
+      </p>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <a
+        routerLink="/categories"
+        class="px-5 py-3 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-gray-300 hover:text-white text-xs tracking-wider uppercase font-semibold transition-all shadow-sm"
+      >
+        ← Volver al Menú
+      </a>
+      <button
+        (click)="activeTab() === 'evaluaciones' ? loadEvaluationsForSelectedJudge() : loadReports()"
+        class="px-4 py-3 rounded-xl border border-brand-gold/40 hover:border-brand-gold text-brand-gold text-xs tracking-wider uppercase font-semibold transition-all flex items-center gap-1.5 shadow-sm"
+        title="Actualizar datos"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+        </svg>
+        <span>Actualizar</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- Tabs de Navegación (Evaluaciones por Juez primero) -->
+  <div class="flex items-center gap-3 mt-8 border-b border-brand-border/40 pb-4 overflow-x-auto">
+    
+    <!-- PESTAÑA PRINCIPAL: EVALUACIONES POR JUEZ (ACTIVA POR DEFECTO) -->
+    <button
+      (click)="activeTab.set('evaluaciones')"
+      class="px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all duration-200 whitespace-nowrap flex items-center gap-2"
+      [ngClass]="activeTab() === 'evaluaciones' ? 'gold-gradient-bg text-brand-darker font-bold shadow-gold-glow' : 'text-gray-400 hover:text-white bg-brand-card border border-brand-border'"
+    >
+      <span>📋</span>
+      <span>Evaluaciones por Juez</span>
+      @if (judgeEvaluationItems().length > 0) {
+        <span
+          class="px-1.5 py-0.2 rounded-full text-[10px] font-mono font-bold"
+          [ngClass]="activeTab() === 'evaluaciones' ? 'bg-brand-darker text-brand-gold' : 'bg-brand-dark text-gray-300'"
+        >
+          {{ judgeEvaluationItems().length }}
+        </span>
+      }
+    </button>
+
+    <!-- PESTAÑA 2: RANKING Y PODIO -->
+    <button
+      (click)="activeTab.set('ranking')"
+      class="px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all duration-200 whitespace-nowrap"
+      [ngClass]="activeTab() === 'ranking' ? 'gold-gradient-bg text-brand-darker font-bold shadow-gold-glow' : 'text-gray-400 hover:text-white bg-brand-card border border-brand-border'"
+    >
+      🏆 Podio & Ranking General
+    </button>
+
+    <!-- PESTAÑA 3: CRITERIOS -->
+    <button
+      (click)="activeTab.set('criterios')"
+      class="px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all duration-200 whitespace-nowrap"
+      [ngClass]="activeTab() === 'criterios' ? 'gold-gradient-bg text-brand-darker font-bold shadow-gold-glow' : 'text-gray-400 hover:text-white bg-brand-card border border-brand-border'"
+    >
+      ⭐ Mejores por Criterio
+    </button>
+
+    <!-- PESTAÑA 4: CONSOLIDADOS -->
+    <button
+      (click)="activeTab.set('consolidados')"
+      class="px-5 py-2.5 rounded-xl text-xs uppercase tracking-wider font-semibold transition-all duration-200 whitespace-nowrap"
+      [ngClass]="activeTab() === 'consolidados' ? 'gold-gradient-bg text-brand-darker font-bold shadow-gold-glow' : 'text-gray-400 hover:text-white bg-brand-card border border-brand-border'"
+    >
+      👤 Expediente por Aspirante
+    </button>
+  </div>
+
+  <!-- PESTAÑA 1: EVALUACIONES REGISTRADAS POR JUEZ (VISTA PRINCIPAL) -->
+  @if (activeTab() === 'evaluaciones') {
+    <div class="mt-6">
+      <app-judge-evaluations-tab
+        [jueces]="jueces()"
+        [selectedJudge]="selectedJudgeName()"
+        [items]="judgeEvaluationItems()"
+        [isLoading]="isLoadingJudgeEvaluations()"
+        [currentActiveJudgeName]="judgeSession.currentJudgeName()"
+        (judgeChange)="onJudgeChange($event)"
+        (viewEvaluation)="onViewEvaluation($event)"
+      />
+    </div>
+  }
+
+  <!-- PESTAÑAS ESTADÍSTICAS GLOBALES -->
+  @if (activeTab() !== 'evaluaciones') {
+    <!-- Filtro de Categoría para Reportes Globales -->
+    <div class="flex items-center gap-2 mt-6 overflow-x-auto pb-2">
+      <span class="text-xs uppercase tracking-wider text-gray-500 font-medium mr-2">Filtrar:</span>
+      <button
+        (click)="setCategoryFilter(null)"
+        class="px-3 py-1 rounded-lg text-xs font-semibold tracking-wider transition-all"
+        [ngClass]="selectedCategoryFilter() === null ? 'bg-brand-gold/20 text-brand-gold border border-brand-gold/40' : 'bg-brand-card text-gray-400 border border-brand-border'"
+      >
+        Todas las Categorías
+      </button>
+      @for (cat of categorias(); track cat.id) {
+        <button
+          (click)="setCategoryFilter(cat.id)"
+          class="px-3 py-1 rounded-lg text-xs font-semibold tracking-wider transition-all whitespace-nowrap"
+          [ngClass]="selectedCategoryFilter() === cat.id ? 'bg-brand-gold/20 text-brand-gold border border-brand-gold/40' : 'bg-brand-card text-gray-400 border border-brand-border'"
+        >
+          {{ cat.nombre }}
+        </button>
+      }
+    </div>
+
+    @if (isLoadingReports()) {
+      <div class="mt-8">
+        <app-loader text="Procesando vistas estadísticas consolidadas..." />
+      </div>
+    } @else {
+      <!-- PESTAÑA 2: RANKING Y PODIO -->
+      @if (activeTab() === 'ranking') {
+        @defer (on idle) {
+          <app-ranking-tab
+            [ranking]="filteredRanking()"
+            [topWinners]="topThreeWinners()"
+            (viewCandidate)="viewCandidateConsolidado($event)"
+          />
+        } @placeholder {
+          <div class="py-12 flex justify-center"><app-loader text="Cargando podio..." /></div>
+        }
+      }
+
+      <!-- PESTAÑA 3: DESTACADAS POR CRITERIO -->
+      @if (activeTab() === 'criterios') {
+        @defer (on idle) {
+          <app-criterios-tab
+            [mejoresPorCriterio]="filteredMejoresPorCriterio()"
+          />
+        } @placeholder {
+          <div class="py-12 flex justify-center"><app-loader text="Cargando estadísticas por criterio..." /></div>
+        }
+      }
+
+      <!-- PESTAÑA 4: EXPEDIENTE CONSOLIDADO -->
+      @if (activeTab() === 'consolidados') {
+        @defer (on idle) {
+          <app-consolidados-tab
+            [consolidados]="filteredConsolidados()"
+            [selectedCandidateId]="selectedCandidateId()"
+            (selectCandidate)="selectCandidate($event)"
+          />
+        } @placeholder {
+          <div class="py-12 flex justify-center"><app-loader text="Cargando expedientes consolidados..." /></div>
+        }
+      }
+    }
+  }
+
+</div>

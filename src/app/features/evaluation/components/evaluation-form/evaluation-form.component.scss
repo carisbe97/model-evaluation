@@ -1,0 +1,42 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  min-height: 0;
+}
+
+.shadow-gold-glow {
+  box-shadow: 0 0 16px rgba(212, 175, 55, 0.45);
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: #D4AF37 rgba(15, 18, 26, 0.6);
+
+  &::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  &::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.25);
+    border-radius: 9999px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: #D4AF37;
+    border-radius: 9999px;
+
+    &:hover {
+      background: #F5E7B2;
+    }
+  }
+}
+
+.scrollbar-none {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}

@@ -1,0 +1,128 @@
+@if (candidate; as cand) {
+  <div class="h-full flex-1 min-h-0 rounded-2xl overflow-hidden bg-brand-card border border-brand-border/80 shadow-xl p-3 flex flex-col">
+    
+    <!-- Foto Principal: carrusel 5s, ajustada al 100% de su contenedor sin recorte ni zoom -->
+    <div 
+      class="relative flex-1 min-h-0 w-full rounded-xl overflow-hidden bg-brand-darker group select-none shadow-inner flex items-center justify-center"
+      (mouseenter)="pauseCarousel()"
+      (mouseleave)="resumeCarousel()"
+    >
+      <!-- Fondo ambiental difuminado para rellenar los bordes con la paleta de la imagen -->
+      <img
+        [src]="activePhotoUrl()"
+        alt=""
+        aria-hidden="true"
+        class="absolute inset-0 w-full h-full object-cover blur-2xl opacity-25 scale-105 pointer-events-none"
+      />
+
+      <!-- Foto principal: ajustada con object-contain al contenedor sin recorte ni zoom -->
+      <img
+        [src]="activePhotoUrl()"
+        [alt]="cand.nombre"
+        class="relative z-[2] w-full h-full object-contain object-center"
+      />
+      
+      <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/35 pointer-events-none z-[3]"></div>
+
+      <!-- Badges Superiores: Aspirante Oficial y Estado del Carrusel -->
+      <div class="absolute top-2.5 left-2.5 flex flex-col gap-1 z-10">
+        <span class="px-2.5 py-0.5 rounded-full bg-black/75 backdrop-blur-md border border-brand-gold/30 text-[10px] font-mono text-brand-gold font-semibold uppercase tracking-wider shadow-md">
+          Aspirante Oficial #{{ formatNumber(cand.id) }}
+        </span>
+        
+        @if (candidatePhotos().length > 1) {
+          <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] text-gray-300 w-fit shadow-md">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse"></span>
+            <span>Carrusel 5s</span>
+            <span class="text-white/60">({{ currentPhotoIndex() + 1 }}/{{ candidatePhotos().length }})</span>
+          </span>
+        }
+      </div>
+
+      <!-- Flechas de navegación manual del carrusel -->
+      @if (candidatePhotos().length > 1) {
+        <button
+          type="button"
+          (click)="prevPhoto(); $event.stopPropagation()"
+          class="absolute left-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-brand-gold hover:text-brand-darker text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg z-20 cursor-pointer"
+          title="Foto anterior"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+
+        <button
+          type="button"
+          (click)="nextPhoto(); $event.stopPropagation()"
+          class="absolute right-2.5 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/60 hover:bg-brand-gold hover:text-brand-darker text-white backdrop-blur-md border border-white/20 flex items-center justify-center transition-all opacity-0 group-hover:opacity-100 hover:scale-110 shadow-lg z-20 cursor-pointer"
+          title="Siguiente foto"
+        >
+          <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+
+        <!-- Barra de indicadores / dots interactivos en la foto -->
+        <div class="absolute bottom-[72px] left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20 px-2.5 py-1 rounded-full bg-black/50 backdrop-blur-md border border-white/10 shadow-md">
+          @for (photo of candidatePhotos(); track photo; let dIdx = $index) {
+            <button
+              type="button"
+              (click)="selectPhoto(photo); $event.stopPropagation()"
+              class="h-1.5 rounded-full transition-all duration-300 cursor-pointer"
+              [ngClass]="activePhotoUrl() === photo ? 'w-5 bg-brand-gold shadow-gold-glow' : 'w-1.5 bg-white/40 hover:bg-white/80'"
+              [title]="'Ir a foto ' + (dIdx + 1)"
+            ></button>
+          }
+        </div>
+      }
+
+      <!-- Información al pie de la foto -->
+      <div class="absolute bottom-2.5 left-3 right-3 pointer-events-none z-10">
+        <span class="text-[9px] tracking-widest uppercase text-brand-gold font-bold">
+          Aspirante No. {{ formatNumber(candidateIndex + 1) }}
+        </span>
+        <h2 class="font-display text-lg sm:text-xl font-bold text-white drop-shadow-md truncate">
+          {{ cand.nombre }}
+        </h2>
+        <p class="text-[11px] text-gray-300">
+          Categoría: {{ categoryName }}
+        </p>
+      </div>
+    </div>
+
+    <!-- Miniaturas compactas de la Galería -->
+    @if (candidatePhotos().length > 1) {
+      <div class="mt-2.5 pt-2 border-t border-brand-border/40 shrink-0">
+        <div class="flex items-center justify-between mb-1.5 px-0.5">
+          <span class="text-[10px] font-medium uppercase tracking-wider text-gray-400">
+            Galería de fotos ({{ candidatePhotos().length }})
+          </span>
+          <span class="text-[9px] text-brand-gold flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-brand-gold animate-ping"></span>
+            Rotación 5s
+          </span>
+        </div>
+        
+        <div class="flex gap-2 overflow-x-auto pb-1 items-center scrollbar-thin">
+          @for (photo of candidatePhotos(); track photo; let pIdx = $index) {
+            <button
+              type="button"
+              (click)="selectPhoto(photo)"
+              class="relative w-11 h-14 rounded-lg overflow-hidden border-2 transition-all duration-300 shrink-0 group focus:outline-none cursor-pointer"
+              [ngClass]="activePhotoUrl() === photo ? 'border-brand-gold scale-105 shadow-gold-glow ring-2 ring-brand-gold/50 opacity-100' : 'border-brand-border/60 opacity-60 hover:opacity-100 hover:border-gray-400'"
+              [title]="'Seleccionar foto ' + (pIdx + 1)"
+            >
+              <img [src]="photo" [alt]="'Miniatura ' + (pIdx + 1)" class="w-full h-full object-cover" />
+              @if (activePhotoUrl() === photo) {
+                <div class="absolute inset-0 bg-brand-gold/15"></div>
+                <span class="absolute bottom-1 right-1 w-1.5 h-1.5 rounded-full bg-brand-gold shadow-md"></span>
+              }
+            </button>
+          }
+        </div>
+      </div>
+    }
+
+  </div>
+}

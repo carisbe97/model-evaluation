@@ -1,0 +1,18 @@
+<span
+  class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium tracking-wider uppercase transition-all duration-300"
+  [ngClass]="{
+    'bg-emerald-950/80 text-emerald-400 border border-emerald-500/30 shadow-sm shadow-emerald-950': estado() === 'Completada',
+    'bg-sky-950/80 text-sky-400 border border-sky-500/30 shadow-sm shadow-sky-950': estado() === 'En Progreso',
+    'bg-amber-950/60 text-amber-300 border border-amber-500/30 shadow-sm shadow-amber-950': estado() === 'Pendiente'
+  }"
+>
+  <span
+    class="w-1.5 h-1.5 rounded-full animate-pulse"
+    [ngClass]="{
+      'bg-emerald-400': estado() === 'Completada',
+      'bg-sky-400': estado() === 'En Progreso',
+      'bg-amber-400': estado() === 'Pendiente'
+    }"
+  ></span>
+  {{ estado() }}
+</span>

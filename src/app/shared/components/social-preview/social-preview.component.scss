@@ -1,0 +1,27 @@
+:host {
+  display: block;
+}
+
+.twitter-embed-wrapper {
+  // Asegura que los iframes insertados por widgets.js se adapten perfectamente
+  ::ng-deep iframe {
+    width: 100% !important;
+    border-radius: 0.75rem !important;
+    background: transparent !important;
+  }
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(255, 255, 255, 0.2) transparent;
+
+  &::-webkit-scrollbar {
+    width: 4px;
+    height: 4px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 4px;
+  }
+}

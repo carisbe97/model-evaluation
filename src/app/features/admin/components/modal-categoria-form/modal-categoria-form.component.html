@@ -1,0 +1,399 @@
+@if (isOpen()) {
+  <div class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-fadeIn">
+    <div class="w-full max-w-[800px] bg-brand-card border border-brand-gold/40 rounded-3xl p-6 sm:p-8 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+      
+      <!-- Encabezado Modal -->
+      <div class="flex items-center justify-between pb-4 mb-6 border-b border-brand-border/60">
+        <div>
+          <span class="text-[10px] uppercase tracking-widest text-brand-gold font-bold">
+            {{ mode() === 'create' ? 'Nueva Categoría' : 'Actualizar Categoría' }}
+          </span>
+          <h3 class="font-display text-xl font-bold text-white mt-0.5">
+            {{ mode() === 'create' ? 'Crear Categoría Oficial' : 'Editar Ficha de Categoría' }}
+          </h3>
+        </div>
+        <button
+          type="button"
+          (click)="onCancel()"
+          class="text-gray-400 hover:text-white p-2 rounded-xl hover:bg-brand-dark transition-colors cursor-pointer"
+        >
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Formulario -->
+      <form (ngSubmit)="onSubmit()" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+            Nombre de la Categoría <span class="text-brand-gold">*</span>
+          </label>
+          <input
+            type="text"
+            [(ngModel)]="catFormNombre"
+            name="catFormNombre"
+            placeholder="Ej. Traje de Gala, Traje de Baño, Entrevista..."
+            required
+            class="w-full px-4 py-3 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+          />
+        </div>
+
+        <div class="grid grid-cols-2 gap-3">
+          <div>
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5 flex items-center justify-between">
+              <span>Orden de Evaluación <span class="text-brand-gold">*</span></span>
+              <span class="text-[10px] text-gray-500 font-normal lowercase tracking-normal">(solo lectura)</span>
+            </label>
+            <input
+              type="number"
+              [(ngModel)]="catFormOrden"
+              name="catFormOrden"
+              disabled
+              readonly
+              class="w-full px-4 py-3 bg-brand-dark/50 rounded-xl border border-brand-border/60 text-gray-400 text-sm cursor-not-allowed select-none focus:outline-none"
+            />
+          </div>
+
+          <!-- SELECTOR DE ICONO CON BUSCADOR / FILTRO -->
+          <div class="relative">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5 flex items-center justify-between">
+              <span>Icono Temático <span class="text-gray-500 font-normal lowercase tracking-normal">(opcional)</span></span>
+              @if (catFormIcono) {
+                <button
+                  type="button"
+                  (click)="limpiarIcono($event)"
+                  class="text-[10px] text-gray-400 hover:text-red-400 font-medium transition-colors cursor-pointer"
+                >
+                  Quitar icono
+                </button>
+              }
+            </label>
+
+            <!-- Botón Principal del Select -->
+            <button
+              type="button"
+              (click)="toggleIconDropdown()"
+              class="w-full px-4 py-3 bg-brand-dark rounded-xl border border-brand-border hover:border-brand-gold/60 text-white text-sm focus:outline-none focus:border-brand-gold flex items-center justify-between gap-3 transition-colors cursor-pointer group"
+              [ngClass]="{ 'border-brand-gold ring-1 ring-brand-gold': isIconDropdownOpen() }"
+            >
+              @if (iconoSeleccionado(); as icon) {
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-6 h-6 rounded-lg bg-brand-card border border-brand-gold/50 flex items-center justify-center shrink-0 text-brand-gold shadow-sm">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="icon.svgPath" />
+                    </svg>
+                  </div>
+                  <div class="text-left truncate">
+                    <span class="font-medium text-xs sm:text-sm text-gray-100 block truncate">{{ icon.label }}</span>
+                  </div>
+                </div>
+              } @else if (catFormIcono) {
+                <!-- Icono personalizado previo -->
+                <div class="flex items-center gap-2.5 min-w-0">
+                  <div class="w-6 h-6 rounded-lg bg-brand-card border border-brand-border flex items-center justify-center shrink-0 text-gray-400">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
+                    </svg>
+                  </div>
+                  <span class="text-xs sm:text-sm text-gray-300 font-mono">{{ catFormIcono }}</span>
+                </div>
+              } @else {
+                <div class="flex items-center gap-2.5 text-gray-400">
+                  <div class="w-6 h-6 rounded-lg bg-brand-card/60 border border-brand-border/60 flex items-center justify-center shrink-0">
+                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                    </svg>
+                  </div>
+                  <span class="text-xs sm:text-sm">Seleccionar icono...</span>
+                </div>
+              }
+
+              <!-- Flecha Chevron -->
+              <svg
+                class="w-4 h-4 text-gray-400 group-hover:text-brand-gold transition-transform duration-200 shrink-0"
+                [ngClass]="{ 'rotate-180 text-brand-gold': isIconDropdownOpen() }"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+
+            <!-- Menú Desplegable con Filtro / Búsqueda -->
+            @if (isIconDropdownOpen()) {
+              <!-- Backdrop para cerrar al hacer clic afuera -->
+              <div
+                class="fixed inset-0 z-40 bg-transparent"
+                (click)="cerrarIconDropdown()"
+              ></div>
+
+              <div class="absolute left-0 right-0 top-full mt-2 z-50 rounded-2xl bg-brand-card border border-brand-gold/40 shadow-2xl p-3 backdrop-blur-xl animate-fadeIn max-h-72 flex flex-col">
+                
+                <!-- Buscador con filtro reactivo -->
+                <div class="relative mb-2.5">
+                  <input
+                    type="text"
+                    [value]="iconFilter()"
+                    (input)="onIconSearchInput($event)"
+                    placeholder="Buscar (ej. corona, estrella, gala)..."
+                    autofocus
+                    class="w-full pl-8 pr-3 py-2 bg-brand-dark rounded-xl border border-brand-border text-white text-xs placeholder-gray-500 focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold"
+                  />
+                  <svg class="w-3.5 h-3.5 text-gray-400 absolute left-2.5 top-2.5 pointer-events-none" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
+                </div>
+
+                <!-- Lista de opciones filtradas con scroll -->
+                <div class="overflow-y-auto space-y-1 pr-1 custom-scrollbar flex-1 max-h-52">
+                  <!-- Opción: Sin icono -->
+                  <button
+                    type="button"
+                    (click)="seleccionarIcono('')"
+                    class="w-full px-3 py-2 rounded-xl text-left text-xs transition-colors flex items-center justify-between cursor-pointer"
+                    [ngClass]="{
+                      'bg-brand-dark/90 text-brand-gold border border-brand-gold/30': !catFormIcono,
+                      'hover:bg-brand-dark/50 text-gray-400 hover:text-gray-200': catFormIcono
+                    }"
+                  >
+                    <div class="flex items-center gap-2.5">
+                      <div class="w-6 h-6 rounded-md bg-brand-dark border border-brand-border/60 flex items-center justify-center text-gray-500">
+                        <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                        </svg>
+                      </div>
+                      <span class="font-medium">Sin icono (ninguno)</span>
+                    </div>
+                    @if (!catFormIcono) {
+                      <span class="text-brand-gold text-xs font-bold">✓</span>
+                    }
+                  </button>
+
+                  @for (item of iconosFiltrados(); track item.name) {
+                    <button
+                      type="button"
+                      (click)="seleccionarIcono(item.name)"
+                      class="w-full px-3 py-2 rounded-xl text-left text-xs transition-all flex items-center justify-between cursor-pointer group"
+                      [ngClass]="{
+                        'bg-brand-dark/90 text-brand-gold border border-brand-gold/40 shadow-sm': catFormIcono === item.name,
+                        'hover:bg-brand-dark/50 text-gray-300 hover:text-white': catFormIcono !== item.name
+                      }"
+                    >
+                      <div class="flex items-center gap-2.5 min-w-0">
+                        <div
+                          class="w-7 h-7 rounded-lg border flex items-center justify-center shrink-0 transition-colors"
+                          [ngClass]="{
+                            'bg-brand-gold/15 border-brand-gold text-brand-gold': catFormIcono === item.name,
+                            'bg-brand-dark border-brand-border group-hover:border-brand-gold/50 text-gray-400 group-hover:text-brand-gold': catFormIcono !== item.name
+                          }"
+                        >
+                          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" [attr.d]="item.svgPath" />
+                          </svg>
+                        </div>
+                        <div class="truncate">
+                          <span class="font-medium block truncate">{{ item.label }}</span>
+                          <span class="text-[10px] text-gray-500 group-hover:text-gray-400 font-mono">{{ item.name }}</span>
+                        </div>
+                      </div>
+
+                      @if (catFormIcono === item.name) {
+                        <span class="text-brand-gold text-xs font-bold shrink-0">✓</span>
+                      }
+                    </button>
+                  } @empty {
+                    <div class="py-6 text-center text-xs text-gray-500">
+                      No se encontraron iconos que coincidan con "{{ iconFilter() }}"
+                    </div>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- CAMPO BANNER DE PORTADA -->
+        <div class="p-4 sm:p-5 bg-brand-dark/60 border border-brand-border rounded-2xl">
+          <div class="flex items-center justify-between mb-3">
+            <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300">
+              Banner de Portada <span class="text-gray-500 font-normal lowercase tracking-normal">(opcional)</span>
+            </label>
+            @if (isLoadingBannerPreview()) {
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-gold/10 border border-brand-gold/30 text-[10px] text-brand-gold font-bold animate-pulse">
+                <svg class="w-3 h-3 animate-spin text-brand-gold" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                Cargando...
+              </span>
+            } @else if (bannerPreview()) {
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-[10px] text-emerald-400 font-medium">
+                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                Imagen lista
+              </span>
+            }
+          </div>
+
+          <!-- Input File Oculto e Independiente -->
+          <input
+            #bannerFileInput
+            type="file"
+            accept="image/*"
+            (change)="onBannerSelected($event)"
+            class="hidden"
+            [disabled]="isSubmitting() || isLoadingBannerPreview() || isUploading()"
+          />
+
+          <!-- ESTADO 1: Cargando con Skeleton Loader Completo -->
+          @if (isLoadingBannerPreview()) {
+            <div class="flex flex-col sm:flex-row items-center gap-5 p-4 sm:p-5 rounded-2xl bg-brand-dark border-2 border-brand-gold/40 shadow-gold-glow animate-pulse">
+              <div class="relative w-full sm:w-56 h-32 rounded-2xl overflow-hidden border-2 border-brand-gold/60 bg-brand-card flex flex-col items-center justify-center shrink-0">
+                <svg class="w-8 h-8 text-brand-gold animate-spin mb-1.5" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                <span class="text-[10px] text-brand-gold font-bold uppercase tracking-wider">Cargando</span>
+              </div>
+              <div class="flex-1 text-center sm:text-left space-y-2.5 w-full">
+                <div class="h-4 w-44 bg-brand-card rounded-md mx-auto sm:mx-0"></div>
+                <div class="h-3 w-32 bg-brand-card/70 rounded-md mx-auto sm:mx-0"></div>
+                <p class="text-xs text-brand-gold/90 flex items-center justify-center sm:justify-start gap-2 font-medium">
+                  <span class="w-2 h-2 rounded-full bg-brand-gold animate-ping"></span>
+                  Generando previsualización instantánea...
+                </p>
+              </div>
+            </div>
+          }
+
+          <!-- ESTADO 2: Selector de Archivo Vacío -->
+          @else if (!bannerPreview()) {
+            <div
+              (click)="bannerFileInput.click()"
+              role="button"
+              tabindex="0"
+              (keydown.enter)="bannerFileInput.click()"
+              (keydown.space)="bannerFileInput.click()"
+              class="flex flex-col items-center justify-center p-6 sm:p-7 border-2 border-dashed border-brand-border hover:border-brand-gold/60 rounded-2xl bg-brand-dark cursor-pointer transition-all duration-200 group hover:bg-brand-card/40 text-center"
+            >
+              <div class="w-12 h-12 rounded-2xl bg-brand-card border border-brand-border group-hover:border-brand-gold/40 flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform shadow-md">
+                <svg class="w-6 h-6 text-gray-400 group-hover:text-brand-gold transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                </svg>
+              </div>
+              <p class="text-xs sm:text-sm text-gray-200 font-semibold group-hover:text-brand-gold transition-colors">
+                Cargar banner de portada desde tu dispositivo
+              </p>
+              <p class="text-[11px] text-gray-400 mt-1">
+                Se guardará en el storage dentro de la carpeta <span class="text-brand-gold font-mono">categorias</span>
+              </p>
+            </div>
+          }
+
+          <!-- ESTADO 3: Previsualización de Imagen Cargada con Opciones -->
+          @else {
+            <div class="relative flex flex-col sm:flex-row items-center gap-5 p-4 rounded-2xl bg-brand-dark border-2 border-brand-gold/40 shadow-gold-glow">
+              
+              <!-- Recuadro con la imagen del banner -->
+              <div class="relative w-full sm:w-56 h-32 rounded-2xl overflow-hidden border-2 border-brand-gold bg-brand-dark shadow-gold-glow shrink-0">
+                <img
+                  [src]="bannerPreview()"
+                  alt="Banner de categoría seleccionado"
+                  class="w-full h-full object-cover"
+                />
+                <div class="absolute bottom-0 inset-x-0 bg-brand-dark/85 backdrop-blur-xs py-0.5 text-center">
+                  <span class="text-[9px] font-bold text-brand-gold uppercase tracking-wider">Banner Oficial</span>
+                </div>
+              </div>
+
+              <!-- Indicador de subida en progreso overlay -->
+              @if (isUploading()) {
+                <div class="absolute inset-0 rounded-2xl bg-black/85 backdrop-blur-sm flex flex-col items-center justify-center gap-2 z-20">
+                  <div class="w-8 h-8 rounded-full border-2 border-brand-gold border-t-transparent animate-spin"></div>
+                  <span class="text-xs font-semibold text-brand-gold tracking-wide">Subiendo imagen al storage...</span>
+                </div>
+              }
+
+              <!-- Información del archivo y botones -->
+              <div class="flex-1 text-center sm:text-left space-y-2 w-full">
+                <div class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-950/60 border border-emerald-500/40 text-[11px] text-emerald-400 font-medium">
+                  <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+                  {{ bannerFile() ? 'Foto seleccionada (lista para guardar)' : 'Banner oficial de la categoría' }}
+                </div>
+                
+                <p class="text-xs text-gray-400 truncate max-w-xs">
+                  @if (bannerFile(); as f) {
+                    Archivo: <span class="text-gray-200 font-medium">{{ f.name }}</span> ({{ (((f.size || 0) / 1024)).toFixed(0) }} KB)
+                  } @else {
+                    Imagen guardada en base de datos
+                  }
+                </p>
+
+                <div class="flex items-center justify-center sm:justify-start gap-2.5 pt-1">
+                  <button
+                    type="button"
+                    (click)="bannerFileInput.click()"
+                    [disabled]="isUploading() || isSubmitting()"
+                    class="px-3.5 py-1.5 rounded-lg border border-brand-gold/40 hover:bg-brand-gold/10 text-brand-gold text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    Cambiar archivo
+                  </button>
+                  <button
+                    type="button"
+                    (click)="eliminarBanner()"
+                    [disabled]="isUploading() || isSubmitting()"
+                    class="px-3.5 py-1.5 rounded-lg border border-red-500/40 hover:bg-red-950/40 text-red-400 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+                  >
+                    Eliminar
+                  </button>
+                </div>
+              </div>
+            </div>
+          }
+        </div>
+
+        <div>
+          <label class="block text-xs font-semibold uppercase tracking-wider text-gray-300 mb-1.5">
+            Descripción Técnica <span class="text-gray-500 font-normal">(Opcional)</span>
+          </label>
+          <textarea
+            rows="3"
+            [(ngModel)]="catFormDescripcion"
+            name="catFormDescripcion"
+            placeholder="Describe qué se evalúa en esta categoría para orientación del jurado..."
+            class="w-full px-4 py-3 bg-brand-dark rounded-xl border border-brand-border text-white text-sm focus:outline-none focus:border-brand-gold focus:ring-1 focus:ring-brand-gold resize-none"
+          ></textarea>
+        </div>
+
+        <!-- Botones de Acción -->
+        <div class="flex items-center justify-end gap-3 pt-4 border-t border-brand-border/60">
+          <button
+            type="button"
+            (click)="onCancel()"
+            [disabled]="isSubmitting() || isUploading()"
+            class="px-4 py-2.5 rounded-xl border border-brand-border hover:border-gray-400 text-gray-300 text-xs font-semibold uppercase tracking-wider transition-colors cursor-pointer disabled:opacity-50"
+          >
+            Cancelar
+          </button>
+          <button
+            type="submit"
+            [disabled]="isSubmitting() || isUploading()"
+            class="px-5 py-2.5 rounded-xl gold-gradient-bg text-brand-darker text-xs font-bold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-gold-glow flex items-center gap-2 cursor-pointer disabled:opacity-60"
+          >
+            @if (isSubmitting() || isUploading()) {
+              <svg class="w-4 h-4 animate-spin text-brand-darker" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+              </svg>
+              <span>{{ isUploading() ? 'Subiendo imagen...' : 'Guardando...' }}</span>
+            } @else {
+              <span>{{ mode() === 'create' ? 'Crear Categoría' : 'Actualizar Categoría' }}</span>
+            }
+          </button>
+        </div>
+      </form>
+
+    </div>
+  </div>
+}

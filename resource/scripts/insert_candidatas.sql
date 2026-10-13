@@ -1,0 +1,274 @@
+-- ====================================================================
+-- SCRIPT DE INSERCIÓN: CANDIDATAS (18 CANDIDATAS TOTALES)
+-- Archivo: insert_candidatas.sql
+-- ====================================================================
+-- Inserta o actualiza las 18 candidatas del certamen.
+-- Incluye fotos de perfil y galería almacenadas en Supabase Storage.
+-- Utiliza ON CONFLICT (id) para garantizar idempotencia y actualiza
+-- la secuencia del SERIAL de PostgreSQL.
+-- ====================================================================
+
+INSERT INTO public.candidatas (id, categoria_id, nombre, foto_perfil, galeria_fotos, url_redes_sociales)
+VALUES
+(
+    1,
+    1,
+    'Dia',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/dia/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/dia/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/dia/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/dia/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/dia/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/dia/5.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/dia/6.jpg'
+    ]::TEXT[],
+    'https://x.com/saddia'
+),
+(
+    2,
+    1,
+    'Sylunh',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Sylunh/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Sylunh/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Sylunh/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Sylunh/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Sylunh/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Sylunh/5.jpg'
+    ]::TEXT[],
+    'https://x.com/sailunh'
+),
+(
+    3,
+    2,
+    'Genesis',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Genesis/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Genesis/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Genesis/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Genesis/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Genesis/4.jpg'
+    ]::TEXT[],
+    'https://x.com/Genesiscruzm'
+),
+(
+    4,
+    1,
+    'PinkChyu',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/PinkChyu/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/PinkChyu/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/PinkChyu/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/PinkChyu/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/PinkChyu/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/PinkChyu/5.jpg'
+    ]::TEXT[],
+    'https://x.com/pinkchyu'
+),
+(
+    5,
+    2,
+    'Heinne',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Heinne/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Heinne/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Heinne/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Heinne/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Heinne/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Heinne/5.jpg'
+    ]::TEXT[],
+    'https://x.com/imuronlinewaifu'
+),
+(
+    6,
+    1,
+    'Manuela',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/5.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/6.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/7.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Manuela/8.jpg'
+    ]::TEXT[],
+    'https://x.com/manuelacadavih'
+),
+(
+    7,
+    3,
+    'Natalia',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Natalia/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Natalia/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Natalia/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Natalia/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Natalia/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Natalia/5.jpg'
+    ]::TEXT[],
+    'https://x.com/angelicfukdoll'
+),
+(
+    8,
+    3,
+    'Anna cherry',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Anna%20cherry/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Anna%20cherry/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Anna%20cherry/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Anna%20cherry/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Anna%20cherry/4.jpg'
+    ]::TEXT[],
+    'https://x.com/Anna_cherry77'
+),
+(
+    9,
+    2,
+    'V',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/V/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/V/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/V/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/V/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/V/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/V/5.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/V/6.jpg'
+    ]::TEXT[],
+    'https://x.com/ggvalll'
+),
+(
+    10,
+    3,
+    'Comatozze',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Comatozze/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Comatozze/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Comatozze/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Comatozze/3.jpeg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Comatozze/4.jpg'
+    ]::TEXT[],
+    'https://x.com/comatozzzze'
+),
+(
+    11,
+    1,
+    'Silver riot',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Silver%20riot/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Silver%20riot/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Silver%20riot/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Silver%20riot/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Silver%20riot/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Silver%20riot/5.jpg'
+    ]::TEXT[],
+    'https://x.com/SilverRiot_0'
+),
+(
+    12,
+    1,
+    'Ximena',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ximena/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ximena/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ximena/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ximena/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ximena/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ximena/5.jpg'
+    ]::TEXT[],
+    'https://x.com/ximena_kujo'
+),
+(
+    13,
+    1,
+    'Lux',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Lux/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Lux/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Lux/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Lux/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Lux/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Lux/5.jpg'
+    ]::TEXT[],
+    'https://x.com/lamegff'
+),
+(
+    14,
+    2,
+    'Angel',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Angel/perfil.png',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Angel/1.png',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Angel/2.png',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Angel/3.png'
+    ]::TEXT[],
+    'https://x.com/Ghkncgmmmv'
+),
+(
+    15,
+    3,
+    'Ailish',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ailish/perfil.png',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ailish/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ailish/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Ailish/3.jpg'
+    ]::TEXT[],
+    'https://x.com/Ailish_GR'
+),
+(
+    16,
+    2,
+    'Madyblood',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Madyblood/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Madyblood/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Madyblood/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Madyblood/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Madyblood/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Madyblood/5.jpg'
+    ]::TEXT[],
+    'https://x.com/madyblood'
+),
+(
+    17,
+    1,
+    'Fe galvao',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Fe%20galvao/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Fe%20galvao/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Fe%20galvao/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Fe%20galvao/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Fe%20galvao/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Fe%20galvao/5.jpg'
+    ]::TEXT[],
+    'https://x.com/fehgalvao_'
+),
+(
+    18,
+    3,
+    'Naomi Soraya',
+    'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Naomi%20Soraya/perfil.jpg',
+    ARRAY[
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Naomi%20Soraya/1.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Naomi%20Soraya/2.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Naomi%20Soraya/3.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Naomi%20Soraya/4.jpg',
+        'https://ebnpiimwxnptqbvsjmtk.supabase.co/storage/v1/object/public/fotos-candidatas/Naomi%20Soraya/5.jpg'
+    ]::TEXT[],
+    'https://x.com/Naomi_Soraya2'
+)
+ON CONFLICT (id) DO UPDATE SET
+    categoria_id = EXCLUDED.categoria_id,
+    nombre = EXCLUDED.nombre,
+    foto_perfil = EXCLUDED.foto_perfil,
+    galeria_fotos = EXCLUDED.galeria_fotos,
+    url_redes_sociales = EXCLUDED.url_redes_sociales;
+
+-- Sincronizar la secuencia del autoincremental (SERIAL)
+SELECT setval(
+    pg_get_serial_sequence('public.candidatas', 'id'),
+    COALESCE((SELECT MAX(id) FROM public.candidatas), 1)
+);

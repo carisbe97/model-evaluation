@@ -1,0 +1,313 @@
+<div class="mt-8 space-y-8">
+  
+  <!-- Barra de Selección Rápida de Candidatas -->
+  <div class="rounded-3xl bg-brand-card border border-brand-border/80 p-5 shadow-xl">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <span class="text-xs uppercase tracking-wider text-gray-400 font-semibold">
+        Seleccionar Aspirante para examinar expediente consolidado:
+      </span>
+      <span class="text-xs font-mono text-brand-gold">
+        {{ _consolidados().length }} aspirantes
+      </span>
+    </div>
+
+    <div class="flex items-center gap-3 overflow-x-auto pb-2 scrollbar-thin">
+      @for (candItem of _consolidados(); track candItem.candidata_id) {
+        <button
+          type="button"
+          (click)="onSelectCandidate(candItem.candidata_id)"
+          class="flex items-center gap-3 p-2.5 rounded-2xl border transition-all duration-200 shrink-0 text-left cursor-pointer"
+          [ngClass]="_selectedCandidateId() === candItem.candidata_id
+            ? 'bg-brand-gold/15 border-brand-gold shadow-gold-glow ring-1 ring-brand-gold/40'
+            : 'bg-brand-dark/60 border-brand-border/70 hover:border-gray-500 hover:bg-brand-dark'"
+        >
+          <div class="relative w-11 h-14 rounded-xl overflow-hidden shrink-0 border border-brand-border">
+            <img [src]="candItem.candidata_foto" class="w-full h-full object-cover" />
+            <span
+              class="absolute bottom-0 right-0 w-4 h-4 text-[9px] font-mono font-bold flex items-center justify-center rounded-tl-md"
+              [ngClass]="{
+                'bg-brand-gold text-black': candItem.ranking_posicion === 1,
+                'bg-slate-300 text-black': candItem.ranking_posicion === 2,
+                'bg-amber-800 text-white': candItem.ranking_posicion === 3,
+                'bg-black/80 text-white': candItem.ranking_posicion > 3
+              }"
+            >
+              #{{ candItem.ranking_posicion }}
+            </span>
+          </div>
+          <div class="pr-2">
+            <span class="font-display text-xs font-bold text-white block leading-tight">
+              {{ candItem.candidata_nombre }}
+            </span>
+            <span class="text-[10px] text-gray-400 block mt-0.5">
+              {{ candItem.categoria_nombre }}
+            </span>
+            <span class="text-[11px] font-mono font-bold text-brand-gold block mt-0.5">
+              {{ candItem.puntaje_total_promedio }} pts
+            </span>
+          </div>
+        </button>
+      }
+    </div>
+  </div>
+
+  <!-- FICHA CONSOLIDADA INDIVIDUAL DE LA CANDIDATA SELECCIONADA -->
+  @if (selectedCandidate(); as candData) {
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+      
+      <!-- Columna Izquierda (4 Cols): Perfil & Resumen de Puntuación -->
+      <div class="lg:col-span-4 space-y-6">
+        <div class="rounded-3xl bg-brand-card border border-brand-border/80 p-6 shadow-2xl relative overflow-hidden">
+          <div class="absolute -top-12 -right-12 w-32 h-32 bg-brand-gold/10 rounded-full blur-2xl pointer-events-none"></div>
+
+          <!-- Badge de Posición en el Podio -->
+          <div class="flex items-center justify-between gap-2 mb-4">
+            <span
+              class="px-3 py-1 rounded-full text-xs font-mono font-bold uppercase tracking-wider flex items-center gap-1.5"
+              [ngClass]="{
+                'bg-brand-gold text-black shadow-gold-glow': candData.ranking_posicion === 1,
+                'bg-slate-200 text-black': candData.ranking_posicion === 2,
+                'bg-amber-800 text-white': candData.ranking_posicion === 3,
+                'bg-brand-dark text-gray-300 border border-brand-border': candData.ranking_posicion > 3
+              }"
+            >
+              <span>Puesto #{{ candData.ranking_posicion }} Oficial</span>
+            </span>
+
+            <span class="text-xs font-mono text-gray-400">
+              {{ candData.total_evaluaciones }} evaluación(es)
+            </span>
+          </div>
+
+          <!-- Foto de la Candidata con Overlay de Resultados -->
+          <div class="relative aspect-[3/4] w-full rounded-2xl overflow-hidden border-2 border-brand-border/80 shadow-lg mb-5 bg-brand-dark">
+            <img [src]="candData.candidata_foto" [alt]="candData.candidata_nombre" class="w-full h-full object-cover" />
+            <div class="absolute bottom-3 left-3 right-3 p-3 rounded-xl bg-black/85 backdrop-blur-md border border-brand-border/60 flex items-center justify-between">
+              <div>
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 block">Promedio Final</span>
+                <span class="font-display font-extrabold text-2xl text-brand-goldLight leading-none">
+                  {{ candData.puntaje_total_promedio }}
+                </span>
+                <span class="text-[10px] text-gray-400 font-mono"> / 5.0 pts</span>
+              </div>
+              <div class="text-right">
+                <span class="text-[10px] uppercase tracking-wider text-gray-400 block">Categoría</span>
+                <span class="text-xs font-semibold text-white">{{ candData.categoria_nombre }}</span>
+              </div>
+            </div>
+          </div>
+
+          <h2 class="font-display text-2xl font-bold text-white text-center">
+            {{ candData.candidata_nombre }}
+          </h2>
+          <p class="text-xs text-center text-gray-400 mt-1">
+            Aspirante Oficial en {{ candData.categoria_nombre }}
+          </p>
+
+          <!-- Resumen Rápido Cualitativo en Tarjeta Izquierda -->
+          @if (candData.criterios_cualitativos.length > 0) {
+            <div class="mt-4 pt-4 border-t border-brand-border/60">
+              <span class="text-[10px] uppercase tracking-widest text-sky-400 font-bold block mb-2">
+                Perfil Cualitativo Destacado:
+              </span>
+              <div class="flex flex-wrap gap-1.5">
+                @for (q of candData.criterios_cualitativos; track q.criterio_id) {
+                  <span class="text-[11px] px-2.5 py-1 rounded-lg bg-sky-950/80 text-sky-200 border border-sky-600/30 font-medium">
+                    {{ q.opcion_mas_escogida }}
+                  </span>
+                }
+              </div>
+            </div>
+          }
+
+          @if (candData.url_redes_sociales) {
+            <div class="mt-4 pt-4 border-t border-brand-border/60">
+              <app-social-preview
+                [url]="candData.url_redes_sociales"
+                [candidateName]="candData.candidata_nombre"
+                [candidateAvatar]="candData.candidata_foto"
+              />
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Columna Derecha (8 Cols): Puntuaciones Cuantitativas/Ordinales + Estadísticas Cualitativas -->
+      <div class="lg:col-span-8 space-y-6">
+        
+        <!-- SECCIÓN 1: CRITERIOS CON NOTA (CUANTITATIVAS + ORDINALES CONVERTIDAS) -->
+        <div class="rounded-3xl bg-brand-card border border-brand-border/80 p-6 sm:p-7 shadow-2xl">
+          <div class="flex items-center justify-between pb-4 border-b border-brand-border/60 mb-5">
+            <div>
+              <h3 class="font-display text-lg font-bold text-white flex items-center gap-2">
+                <span>Calificaciones Numéricas y Ordinales</span>
+              </h3>
+              <p class="text-xs text-gray-400 mt-0.5">
+                Promedios ponderados aplicados al cálculo final de la aspirante.
+              </p>
+            </div>
+            <span class="text-xs font-mono px-2.5 py-1 rounded-lg bg-brand-gold/10 text-brand-gold border border-brand-gold/30">
+              Ponderación Oficial
+            </span>
+          </div>
+
+          <div class="space-y-4">
+            @for (critPuntaje of candData.criterios_con_puntaje; track critPuntaje.criterio_id) {
+              <div class="p-4 rounded-2xl bg-brand-dark/50 border border-brand-border/70 hover:border-brand-gold/30 transition-all">
+                <div class="flex items-start justify-between gap-4 mb-2">
+                  <div>
+                    <div class="flex items-center gap-2">
+                      <span class="text-sm font-semibold text-white">{{ critPuntaje.criterio_nombre }}</span>
+                      @if (critPuntaje.tipo_calificacion === 'ordinal') {
+                        <span class="text-[9px] px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-300 border border-emerald-600/30 font-mono font-medium">
+                          Ordinal Convertido
+                        </span>
+                      } @else {
+                        <span class="text-[9px] px-2 py-0.5 rounded-full bg-brand-gold/15 text-brand-gold border border-brand-gold/30 font-mono font-medium">
+                          Directo (Estrellas)
+                        </span>
+                      }
+                      @if (critPuntaje.peso) {
+                        <span class="text-[10px] text-gray-400 font-mono">
+                          (Peso: {{ critPuntaje.peso }}%)
+                        </span>
+                      }
+                    </div>
+                  </div>
+
+                  <div class="text-right shrink-0">
+                    <span class="font-mono text-base font-bold text-brand-gold">
+                      {{ critPuntaje.puntaje_promedio }}
+                    </span>
+                    <span class="text-xs text-gray-500 font-mono"> / {{ critPuntaje.puntaje_maximo ?? 5 }}</span>
+                  </div>
+                </div>
+
+                <!-- Barra de Progreso de la Calificación -->
+                <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                  <div
+                    class="h-full rounded-full transition-all duration-500"
+                    [ngClass]="critPuntaje.tipo_calificacion === 'ordinal' ? 'bg-gradient-to-r from-emerald-500 to-teal-400' : 'gold-gradient-bg'"
+                    [style.width.%]="(critPuntaje.puntaje_promedio / (critPuntaje.puntaje_maximo ?? 5)) * 100"
+                  ></div>
+                </div>
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- SECCIÓN 2: ESTADÍSTICAS DE CRITERIOS CUALITATIVOS (LA OPCIÓN MÁS ESCOGIDA Y DISTRIBUCIÓN) -->
+        <div class="rounded-3xl bg-brand-card border border-brand-border/80 p-6 sm:p-7 shadow-2xl">
+          <div class="flex items-center justify-between pb-4 border-b border-brand-border/60 mb-5">
+            <div>
+              <h3 class="font-display text-lg font-bold text-white flex items-center gap-2">
+                <span>Resultados Cualitativos & Votación del Jurado</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-sky-950 text-sky-300 border border-sky-600/40 font-mono">
+                  Moda & Distribución
+                </span>
+              </h3>
+              <p class="text-xs text-gray-400 mt-0.5">
+                Opción más elegida por los jueces y dispersión porcentual de votos en criterios descriptivos.
+              </p>
+            </div>
+          </div>
+
+          <div class="space-y-6">
+            @for (critQuali of candData.criterios_cualitativos; track critQuali.criterio_id) {
+              <div class="p-5 rounded-2xl bg-brand-dark/50 border border-brand-border/80 hover:border-sky-500/30 transition-all">
+                
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4">
+                  <div>
+                    <span class="text-[10px] tracking-widest uppercase text-sky-400 font-bold block mb-0.5">
+                      Criterio Descriptivo
+                    </span>
+                    <h4 class="font-display text-base font-bold text-white">
+                      {{ critQuali.criterio_nombre }}
+                    </h4>
+                  </div>
+
+                  <!-- Badge Destacado de la Opción Predominante (Moda) -->
+                  <div class="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-sky-950/70 border border-sky-500/40 text-right shrink-0">
+                    <div>
+                      <span class="text-[9px] uppercase tracking-wider text-sky-300 block">Opción Más Votada:</span>
+                      <span class="text-xs font-bold text-white font-display">
+                        {{ critQuali.opcion_mas_escogida }}
+                      </span>
+                    </div>
+                    <span class="px-2 py-0.5 rounded-md bg-sky-400 text-sky-950 text-xs font-mono font-extrabold shadow-sm">
+                      {{ critQuali.porcentaje_mas_escogida }}%
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Distribución de Votos de Todas las Opciones -->
+                <div class="space-y-2.5 pt-2 border-t border-brand-border/50">
+                  <span class="text-[10px] uppercase tracking-wider text-gray-500 font-medium block">
+                    Distribución de votos entre jueces ({{ critQuali.total_votos }} votos registrados):
+                  </span>
+
+                  @for (opcionVoto of critQuali.distribucion; track opcionVoto.valor_cualitativo) {
+                    <div class="space-y-1">
+                      <div class="flex items-center justify-between text-xs">
+                        <div class="flex items-center gap-1.5">
+                          <span class="font-medium" [ngClass]="opcionVoto.es_opcion_mas_votada ? 'text-white font-semibold' : 'text-gray-400'">
+                            {{ opcionVoto.valor_cualitativo }}
+                          </span>
+                          @if (opcionVoto.es_opcion_mas_votada) {
+                            <span class="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-brand-gold border border-brand-gold/30 font-mono">
+                              Predominante ★
+                            </span>
+                          }
+                        </div>
+                        <span class="font-mono text-xs" [ngClass]="opcionVoto.es_opcion_mas_votada ? 'text-sky-300 font-bold' : 'text-gray-500'">
+                          {{ opcionVoto.votos_opcion }} votos ({{ opcionVoto.porcentaje_votos }}%)
+                        </span>
+                      </div>
+
+                      <!-- Barra horizontal del porcentaje de votos -->
+                      <div class="w-full bg-zinc-800 rounded-full h-2 overflow-hidden">
+                        <div
+                          class="h-full rounded-full transition-all duration-500"
+                          [ngClass]="opcionVoto.es_opcion_mas_votada ? 'bg-gradient-to-r from-sky-400 to-blue-500' : 'bg-zinc-600'"
+                          [style.width.%]="opcionVoto.porcentaje_votos"
+                        ></div>
+                      </div>
+                    </div>
+                  }
+                </div>
+
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- SECCIÓN 3: OBSERVACIONES Y DICTAMEN DE LOS JUECES -->
+        @if (candData.observaciones_jueces.length > 0) {
+          <div class="rounded-3xl bg-brand-card border border-brand-border/80 p-6 sm:p-7 shadow-2xl">
+            <h3 class="font-display text-lg font-bold text-white mb-4 flex items-center gap-2">
+              <span>Observaciones y Dictamen del Jurado</span>
+              <span class="text-xs font-mono text-gray-400 font-normal">({{ candData.observaciones_jueces.length }})</span>
+            </h3>
+
+            <div class="space-y-3">
+              @for (obs of candData.observaciones_jueces; track obs.juez) {
+                <div class="p-4 rounded-xl bg-brand-dark/40 border border-brand-border/60">
+                  <div class="flex items-center gap-2 mb-1.5">
+                    <span class="text-xs font-bold text-brand-gold font-display">{{ obs.juez }}</span>
+                    <span class="text-[10px] text-gray-500 font-mono">Jurado Calificador</span>
+                  </div>
+                  <p class="text-xs text-gray-300 italic leading-relaxed">
+                    "{{ obs.comentario }}"
+                  </p>
+                </div>
+              }
+            </div>
+          </div>
+        }
+
+      </div>
+
+    </div>
+  }
+
+</div>

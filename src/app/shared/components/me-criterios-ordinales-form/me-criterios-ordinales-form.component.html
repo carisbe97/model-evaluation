@@ -1,0 +1,71 @@
+<div class="mt-6">
+  <div class="flex items-center gap-2 mb-3">
+    <span class="text-xs font-bold uppercase tracking-wider text-brand-goldLight">
+      2. Criterios por Escala de Desempeño (Cualitativo con Ponderación)
+    </span>
+    <span class="h-px flex-1 bg-brand-border/60"></span>
+  </div>
+
+  <div class="space-y-4">
+    @for (crit of criterios; track crit.id) {
+      <div class="p-3 rounded-2xl bg-brand-dark/50 border border-brand-border/70 hover:border-brand-gold/30 transition-colors">
+        
+        <div class="flex items-start justify-between gap-4 mb-3">
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-sm font-semibold text-white">{{ crit.nombre }}</span>
+              @if (crit.peso) {
+                <span class="text-[10px] px-2 py-0.5 rounded bg-brand-gold/10 text-brand-gold border border-brand-gold/20 font-mono">
+                  Peso {{ crit.peso }}%
+                </span>
+              }
+              <span class="text-[10px] px-2 py-0.5 rounded font-mono transition-colors"
+                [ngClass]="qualitativeMap[crit.id] ? 'bg-emerald-950/70 text-emerald-400 border border-emerald-500/30' : 'bg-amber-950/50 text-amber-300 border border-amber-500/30'">
+                {{ qualitativeMap[crit.id] ? '✓ Calificado' : '• Pendiente' }}
+              </span>
+            </div>
+            @if (crit.descripcion) {
+              <p class="text-xs text-gray-400 mt-0.5">{{ crit.descripcion }}</p>
+            }
+          </div>
+
+          <!-- Display del nivel obtenido en puntos -->
+          <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-brand-gold/10 border border-brand-gold/30 shrink-0">
+            <span class="text-xs text-gray-300 font-medium">Nivel:</span>
+            <span class="font-mono text-sm font-bold text-brand-gold">
+              @if (qualitativeMap[crit.id]) {
+                {{ getOrdinalOptionScore(crit, qualitativeMap[crit.id]) }} pts
+              } @else {
+                <span class="text-xs text-gray-500 font-normal font-sans">-- pts</span>
+              }
+            </span>
+          </div>
+        </div>
+
+        <!-- Pills ordenadas de menor a mayor -->
+        <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
+          @for (opcion of crit.opciones_cualitativas || []; track opcion; let oIdx = $index) {
+            <label
+              class="relative flex flex-col items-center justify-center p-3 rounded-xl border cursor-pointer select-none transition-all duration-200 text-xs text-center"
+              [ngClass]="{
+                'bg-brand-gold text-brand-darker border-brand-gold shadow-gold-glow font-bold scale-[1.02]': qualitativeMap[crit.id] === opcion,
+                'bg-brand-dark hover:bg-brand-card border-brand-border text-gray-300 hover:text-white hover:border-gray-500': qualitativeMap[crit.id] !== opcion
+              }"
+            >
+              <input
+                type="radio"
+                [name]="'ordinal-' + crit.id"
+                [value]="opcion"
+                [checked]="qualitativeMap[crit.id] === opcion"
+                (change)="onQualitativeChange(crit.id, opcion)"
+                class="sr-only"
+              />
+              <span class="leading-tight">{{ opcion }}</span>
+            </label>
+          }
+        </div>
+
+      </div>
+    }
+  </div>
+</div>

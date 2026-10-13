@@ -1,0 +1,269 @@
+<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+
+  <!-- BOTÓN VOLVER & ACCIONES SUPERIORES -->
+  <div class="flex items-center justify-between gap-4 mb-8">
+    <a
+      routerLink="/results"
+      class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl bg-brand-card hover:bg-brand-cardHover border border-brand-border text-gray-300 hover:text-white text-xs uppercase tracking-wider font-semibold transition-all shadow-md group"
+    >
+      <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+      </svg>
+      <span>Volver a Evaluaciones</span>
+    </a>
+
+    <div class="flex items-center gap-2">
+      <span class="text-[11px] font-mono tracking-widest uppercase text-brand-gold font-semibold bg-brand-gold/10 px-3 py-1.5 rounded-lg border border-brand-gold/30">
+        Acta Individual de Evaluación
+      </span>
+    </div>
+  </div>
+
+  @if (isLoading()) {
+    <app-loader text="Cargando expediente de calificaciones..." />
+  } @else if (errorMessage()) {
+    <div class="bg-red-950/30 border border-red-500/40 rounded-2xl p-8 text-center max-w-lg mx-auto">
+      <div class="w-12 h-12 rounded-full bg-red-900/40 border border-red-500/30 flex items-center justify-center mx-auto mb-3 text-red-400">
+        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+      </div>
+      <h3 class="text-base font-bold text-white mb-2">{{ errorMessage() }}</h3>
+      <a
+        routerLink="/results"
+        class="inline-block mt-4 px-5 py-2 rounded-xl gold-gradient-bg text-brand-darker font-bold text-xs uppercase tracking-wider"
+      >
+        Regresar al listado
+      </a>
+    </div>
+  } @else if (evaluacion()) {
+
+    <!-- TARJETA PRINCIPAL: HEADER DE LA ASPIRANTE Y JUEZ -->
+    <div class="bg-brand-card/95 border border-brand-border/80 rounded-3xl p-6 sm:p-8 backdrop-blur-md shadow-2xl mb-8 relative overflow-hidden">
+      <!-- Glow decorativo de fondo -->
+      <div class="absolute -top-24 -right-24 w-96 h-96 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+
+      <div class="flex flex-col md:flex-row items-center md:items-start gap-6 sm:gap-8 relative z-10">
+        
+        <!-- Foto de Perfil de la Candidata -->
+        <div class="relative w-32 h-32 sm:w-40 sm:h-40 rounded-2xl overflow-hidden border-2 border-brand-gold/60 shadow-xl flex-shrink-0">
+          @if (candidata()?.foto_perfil) {
+            <img
+              [src]="candidata()?.foto_perfil"
+              [alt]="candidata()?.nombre || 'Candidata'"
+              class="w-full h-full object-cover object-top"
+            />
+          } @else {
+            <div class="w-full h-full bg-brand-dark flex items-center justify-center text-brand-gold text-2xl font-bold">
+              VE
+            </div>
+          }
+          <div class="absolute bottom-2 left-2 bg-brand-darker/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-brand-gold border border-brand-gold/40">
+            #{{ evaluacion()?.candidata_id }}
+          </div>
+        </div>
+
+        <!-- Info Principal -->
+        <div class="flex-1 text-center md:text-left">
+          <div class="flex flex-wrap items-center justify-center md:justify-start gap-2 mb-2">
+            <span class="px-3 py-1 rounded-full text-xs font-semibold bg-brand-dark border border-brand-border text-brand-goldLight">
+              {{ categoria()?.nombre || 'Categoría' }}
+            </span>
+            @if (evaluacion()?.created_at) {
+              <span class="text-xs text-gray-500 font-mono">
+                Registrado: {{ evaluacion()?.created_at | date:'mediumDate' }}
+              </span>
+            }
+          </div>
+
+          <h1 class="text-2xl sm:text-4xl font-bold text-white font-display tracking-tight mb-3">
+            {{ candidata()?.nombre || 'Candidata #' + evaluacion()?.candidata_id }}
+          </h1>
+
+          <!-- Tarjeta del Juez Evaluador -->
+          <div class="inline-flex items-center gap-3 px-4 py-2 rounded-xl bg-brand-dark/80 border border-brand-border/80 text-left">
+            <div class="w-8 h-8 rounded-full bg-brand-gold/20 border border-brand-gold/50 flex items-center justify-center text-brand-gold font-bold text-xs">
+              ⚖️
+            </div>
+            <div>
+              <span class="text-[10px] uppercase tracking-wider text-gray-400 block font-semibold">Juez Evaluador</span>
+              <span class="text-sm font-bold text-white block">{{ evaluacion()?.juez_nombre }}</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tarjeta de Puntaje Total Otorgado -->
+        <div class="w-full md:w-auto flex-shrink-0 bg-brand-dark/90 border border-brand-gold/40 rounded-2xl p-5 text-center shadow-lg">
+          <span class="text-[10px] uppercase tracking-widest text-gray-400 block font-semibold mb-1">
+            Puntaje Otorgado
+          </span>
+          <div class="font-display font-black text-4xl sm:text-5xl text-brand-gold mb-1">
+            {{ evaluacion()?.puntaje_total | number:'1.2-2' }}
+          </div>
+          <span class="text-xs text-gray-400 block font-mono mb-2">escala 1.0 - 5.0</span>
+          
+          @let badge = getPerformanceBadge(evaluacion()?.puntaje_total || 0);
+          <span
+            class="inline-block px-3 py-1 rounded-full text-[10px] font-bold tracking-wider uppercase border"
+            [ngClass]="badge.css"
+          >
+            {{ badge.text }}
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- SECCIÓN 1: CRITERIOS CUANTITATIVOS -->
+    @if (criteriosCuantitativos().length > 0) {
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-brand-border/60">
+          <span class="text-lg">⭐</span>
+          <h2 class="text-lg font-bold text-white font-display uppercase tracking-wider">
+            Criterios Cuantitativos
+          </h2>
+          <span class="text-xs text-gray-500 font-mono">({{ criteriosCuantitativos().length }})</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (crit of criteriosCuantitativos(); track crit.criterio_id) {
+            <div class="bg-brand-card/90 border border-brand-border/70 rounded-2xl p-5 hover:border-brand-gold/50 transition-all shadow-md">
+              <div class="flex items-start justify-between gap-3 mb-2">
+                <div>
+                  <h3 class="text-sm font-bold text-white">{{ crit.nombre }}</h3>
+                  @if (crit.descripcion) {
+                    <p class="text-xs text-gray-400 mt-0.5">{{ crit.descripcion }}</p>
+                  }
+                </div>
+                <div class="flex flex-col items-end flex-shrink-0">
+                  <span class="px-2.5 py-1 rounded-lg bg-amber-400/20 text-brand-gold font-mono font-bold text-sm border border-brand-gold/40">
+                    ★ {{ crit.puntaje | number:'1.1-1' }} / {{ crit.puntaje_maximo }}
+                  </span>
+                  @if (crit.peso) {
+                    <span class="text-[10px] text-gray-500 font-mono mt-1">Peso: {{ crit.peso }}%</span>
+                  }
+                </div>
+              </div>
+
+              <!-- Barra de progreso visual -->
+              <div class="w-full bg-brand-dark rounded-full h-2 mt-3 overflow-hidden border border-brand-border/40">
+                <div
+                  class="gold-gradient-bg h-full rounded-full transition-all duration-500"
+                  [style.width.%]="((crit.puntaje || 0) / (crit.puntaje_maximo || 5)) * 100"
+                ></div>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- SECCIÓN 2: CRITERIOS ORDINALES -->
+    @if (criteriosOrdinales().length > 0) {
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-brand-border/60">
+          <span class="text-lg">📊</span>
+          <h2 class="text-lg font-bold text-white font-display uppercase tracking-wider">
+            Criterios Ordinales (Escala Ponderada)
+          </h2>
+          <span class="text-xs text-gray-500 font-mono">({{ criteriosOrdinales().length }})</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (crit of criteriosOrdinales(); track crit.criterio_id) {
+            <div class="bg-brand-card/90 border border-brand-border/70 rounded-2xl p-5 hover:border-brand-gold/50 transition-all shadow-md">
+              <div class="flex items-start justify-between gap-3 mb-3">
+                <div>
+                  <h3 class="text-sm font-bold text-white">{{ crit.nombre }}</h3>
+                  @if (crit.descripcion) {
+                    <p class="text-xs text-gray-400 mt-0.5">{{ crit.descripcion }}</p>
+                  }
+                </div>
+                @if (crit.peso) {
+                  <span class="text-[10px] text-gray-500 font-mono flex-shrink-0">Peso: {{ crit.peso }}%</span>
+                }
+              </div>
+
+              <!-- Nivel y Puntaje Asignado -->
+              <div class="flex items-center justify-between p-3 rounded-xl bg-brand-dark/70 border border-brand-border/60">
+                <div class="flex items-center gap-2">
+                  <span class="text-xs text-gray-400">Nivel asignado:</span>
+                  <span class="px-2.5 py-1 rounded-md bg-emerald-500/20 text-emerald-300 font-semibold text-xs border border-emerald-500/40">
+                    {{ crit.valor_cualitativo }}
+                  </span>
+                </div>
+                @if (crit.puntaje !== undefined) {
+                  <span class="text-xs font-mono font-bold text-brand-gold">
+                    Eq: {{ crit.puntaje | number:'1.2-2' }} pts
+                  </span>
+                }
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- SECCIÓN 3: CRITERIOS CUALITATIVOS -->
+    @if (criteriosCualitativos().length > 0) {
+      <div class="mb-8">
+        <div class="flex items-center gap-2 mb-4 pb-2 border-b border-brand-border/60">
+          <span class="text-lg">✨</span>
+          <h2 class="text-lg font-bold text-white font-display uppercase tracking-wider">
+            Criterios Cualitativos & Estilo Editorial
+          </h2>
+          <span class="text-xs text-gray-500 font-mono">({{ criteriosCualitativos().length }})</span>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+          @for (crit of criteriosCualitativos(); track crit.criterio_id) {
+            <div class="bg-brand-card/90 border border-brand-border/70 rounded-2xl p-5 hover:border-brand-gold/50 transition-all shadow-md">
+              <h3 class="text-sm font-bold text-white mb-2">{{ crit.nombre }}</h3>
+              @if (crit.descripcion) {
+                <p class="text-xs text-gray-400 mb-3">{{ crit.descripcion }}</p>
+              }
+              <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-brand-gold/15 text-brand-goldLight border border-brand-gold/40 text-xs font-semibold">
+                <span>🏷️</span>
+                <span>{{ crit.valor_cualitativo || 'Sin asignar' }}</span>
+              </div>
+            </div>
+          }
+        </div>
+      </div>
+    }
+
+    <!-- SECCIÓN 4: OBSERVACIONES DEL EVALUADOR -->
+    <div class="bg-brand-card/90 border border-brand-gold/30 rounded-2xl p-6 sm:p-8 backdrop-blur-md shadow-xl mb-8">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-brand-gold text-lg">📝</span>
+        <h3 class="text-sm font-bold text-white uppercase tracking-wider font-display">
+          Observaciones & Conclusiones del Juez
+        </h3>
+      </div>
+      @if (evaluacion()?.observaciones) {
+        <blockquote class="italic text-gray-200 text-sm sm:text-base border-l-2 border-brand-gold pl-4 py-1 leading-relaxed bg-brand-dark/40 rounded-r-xl p-3">
+          "{{ evaluacion()?.observaciones }}"
+        </blockquote>
+      } @else {
+        <p class="text-xs text-gray-500 italic">
+          El evaluador no registró observaciones adicionales por escrito para esta candidata.
+        </p>
+      }
+    </div>
+
+    <!-- BOTÓN INFERIOR DE REGRESO -->
+    <div class="text-center pt-4">
+      <a
+        routerLink="/results"
+        class="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl gold-gradient-bg text-brand-darker font-bold text-xs uppercase tracking-wider shadow-gold-glow hover:opacity-95 transition-all"
+      >
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+        </svg>
+        <span>Volver a la Lista de Evaluaciones</span>
+      </a>
+    </div>
+
+  }
+
+</div>
